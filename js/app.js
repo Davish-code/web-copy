@@ -29,7 +29,7 @@ const App = {
 
     // Trigger renders
     if (sectionId === 'cart') Cart.renderCart();
-    if (sectionId === 'checkout') Checkout.renderCheckout();
+    if (sectionId === 'checkout') Checkout.renderCheckout();  // async, pre-fills saved address
     if (sectionId === 'profile') Auth.renderProfileSection();
     if (sectionId === 'menu') Products.renderProducts(Products.currentCategory);
 

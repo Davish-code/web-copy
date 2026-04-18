@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, getDoc, orderBy, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAeaUoQLLDDh1-FgeAdGfT1CWBghudWZMA",
@@ -36,6 +36,7 @@ window.FirestoreDoc = doc;
 window.FirestoreSetDoc = setDoc;
 window.FirestoreUpdateDoc = updateDoc;
 window.FirestoreDeleteDoc = deleteDoc;
+window.FirestoreGetDoc = getDoc;
 
 // Signal to non-module scripts that Firebase is fully ready
 window.dispatchEvent(new CustomEvent('firebase-ready'));

@@ -1,7 +1,32 @@
 // ===== YUMEI Bakery — Checkout Module =====
 
 const Checkout = {
-  renderCheckout() {
+
+  // Load saved delivery details for this user from Firestore
+  async loadSavedProfile(uid) {
+    try {
+      if (!window.FirebaseDB || !window.FirestoreDoc || !window.FirestoreGetDoc) return null;
+      const ref = window.FirestoreDoc(window.FirebaseDB, "user_profiles", uid);
+      const snap = await window.FirestoreGetDoc(ref);
+      return snap.exists() ? snap.data() : null;
+    } catch (err) {
+      console.warn("Could not load saved profile:", err);
+      return null;
+    }
+  },
+
+  // Save delivery details back to Firestore so next checkout is pre-filled
+  async saveProfileDetails(uid, details) {
+    try {
+      if (!window.FirebaseDB || !window.FirestoreDoc || !window.FirestoreSetDoc) return;
+      const ref = window.FirestoreDoc(window.FirebaseDB, "user_profiles", uid);
+      await window.FirestoreSetDoc(ref, details, { merge: true });
+    } catch (err) {
+      console.warn("Could not save profile details:", err);
+    }
+  },
+
+  async renderCheckout() {
     const container = document.getElementById('checkout-content');
     if (!container) return;
 
@@ -31,6 +56,17 @@ const Checkout = {
       return;
     }
 
+    // Show a brief loading state while we fetch saved details
+    container.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-muted);">Loading your details…</div>`;
+
+    // Fetch previously saved profile (phone + address)
+    const saved = await this.loadSavedProfile(user.uid);
+
+    const prefillName    = saved?.name    || user.displayName || '';
+    const prefillPhone   = saved?.phone   || '';
+    const prefillEmail   = saved?.email   || user.email || '';
+    const prefillAddress = saved?.address || '';
+
     container.innerHTML = `
       <div class="checkout-container">
         <div class="checkout-form-section">
@@ -39,20 +75,20 @@ const Checkout = {
             <div class="form-row">
               <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" class="form-input" id="co-name" value="${user?.name || ''}" placeholder="Your full name" required>
+                <input type="text" class="form-input" id="co-name" value="${prefillName}" placeholder="Your full name" required>
               </div>
               <div class="form-group">
                 <label>Phone Number</label>
-                <input type="tel" class="form-input" id="co-phone" value="${user?.phone || ''}" placeholder="98XXXXXXXX" required>
+                <input type="tel" class="form-input" id="co-phone" value="${prefillPhone}" placeholder="98XXXXXXXX" required>
               </div>
             </div>
             <div class="form-group">
               <label>Email Address</label>
-              <input type="email" class="form-input" id="co-email" value="${user?.email || ''}" placeholder="you@example.com" required>
+              <input type="email" class="form-input" id="co-email" value="${prefillEmail}" placeholder="you@example.com" required>
             </div>
             <div class="form-group">
               <label>Delivery Address</label>
-              <textarea class="form-input" id="co-address" rows="3" placeholder="Street address, landmark, city, PIN code" required></textarea>
+              <textarea class="form-input" id="co-address" rows="3" placeholder="Street address, landmark, city, PIN code" required>${prefillAddress}</textarea>
             </div>
             <div class="form-group">
               <label>Special Instructions</label>
@@ -97,21 +133,21 @@ const Checkout = {
       return false;
     }
 
-    const name = document.getElementById('co-name').value;
-    const phone = document.getElementById('co-phone').value;
-    const email = document.getElementById('co-email').value;
-    const address = document.getElementById('co-address').value;
-    const notes = document.getElementById('co-notes').value;
+    const name    = document.getElementById('co-name').value.trim();
+    const phone   = document.getElementById('co-phone').value.trim();
+    const email   = document.getElementById('co-email').value.trim();
+    const address = document.getElementById('co-address').value.trim();
+    const notes   = document.getElementById('co-notes').value.trim();
     const payment = document.querySelector('input[name="payment"]:checked').value;
 
-    const cart = Cart.getCart();
+    const cart   = Cart.getCart();
     const totals = Cart.getCartTotal();
 
     // Disable the button to prevent multiple clicks
     const submitBtn = e.target.querySelector('button[type="submit"]');
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerHTML = 'Processing...';
+      submitBtn.innerHTML = 'Processing…';
     }
 
     const order = {
@@ -130,6 +166,9 @@ const Checkout = {
     const success = await Orders.saveOrder(order);
 
     if (success) {
+      // Persist the delivery details for next time (silently in background)
+      this.saveProfileDetails(user.uid, { name, phone, email, address });
+
       Cart.clearCart();
       this.showSuccess(order);
     } else {
@@ -138,7 +177,7 @@ const Checkout = {
         submitBtn.innerHTML = `Place Order — ${Utils.formatCurrency(totals.total)}`;
       }
     }
-    
+
     return false;
   },
 
