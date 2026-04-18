@@ -212,6 +212,9 @@ const Checkout = {
   },
 
   showSuccess(order) {
+    // Store order reference so downloadInvoice() can access it safely
+    Checkout._lastOrder = order;
+
     const container = document.getElementById('checkout-content');
     container.innerHTML = `
       <div style="max-width:560px;margin:0 auto;text-align:center;padding:48px 24px;">
@@ -238,8 +241,8 @@ const Checkout = {
 
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
           <button class="btn btn-secondary" onclick="App.navigate('profile')">📋 View Orders</button>
-          <button class="btn btn-primary" style="background:linear-gradient(135deg,#d4a056,#b5656b);"
-            onclick="Checkout.downloadInvoice(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+          <button class="btn btn-primary" id="invoice-btn"
+            style="background:linear-gradient(135deg,#d4a056,#b5656b);" onclick="Checkout.downloadInvoice()">
             ⬇️ Download Invoice
           </button>
           <button class="btn btn-secondary" onclick="App.navigate('menu')">🛍️ Shop More</button>
@@ -247,7 +250,9 @@ const Checkout = {
       </div>`;
   },
 
-  downloadInvoice(order) {
+  downloadInvoice() {
+    const order = Checkout._lastOrder;
+    if (!order) { Utils.showToast('No order data found.', 'error'); return; }
     const date = Utils.formatDate(order.date);
     const itemRows = (order.items || []).map(item => `
       <tr>
