@@ -351,6 +351,10 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
 }
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 .animate-in {
   opacity: 0;

@@ -36,3 +36,6 @@ window.FirestoreDoc = doc;
 window.FirestoreSetDoc = setDoc;
 window.FirestoreUpdateDoc = updateDoc;
 window.FirestoreDeleteDoc = deleteDoc;
+
+// Signal to non-module scripts that Firebase is fully ready
+window.dispatchEvent(new CustomEvent('firebase-ready'));

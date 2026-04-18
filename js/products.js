@@ -43,7 +43,8 @@ const Products = {
     grid.innerHTML = filtered.map((p, i) => `
       <div class="product-card animate-in" style="animation-delay: ${i * 0.08}s">
         <div class="product-card-img">
-          <img src="${p.image}" alt="${p.name}" loading="lazy">
+          <img src="${p.image}" alt="${p.name}" loading="lazy"
+               onerror="this.src=''; this.onerror=null; this.style.background='var(--surface-2)';">
           ${p.badge ? `<span class="product-card-badge">${p.badge}</span>` : ''}
         </div>
         <div class="product-card-body">
@@ -71,6 +72,23 @@ const Products = {
     });
   },
 
+  // Show skeleton placeholders while Firestore data loads
+  showSkeletons() {
+    const grid = document.getElementById('products-grid');
+    if (!grid) return;
+    grid.innerHTML = Array(6).fill(0).map(() => `
+      <div class="product-card" style="pointer-events:none;">
+        <div class="product-card-img" style="background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3, #2a2a3a) 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.4s infinite;"></div>
+        <div class="product-card-body">
+          <div style="height:12px; width:50%; border-radius:6px; background:var(--surface-2); margin-bottom:10px; animation: skeleton-shimmer 1.4s infinite;"></div>
+          <div style="height:18px; width:80%; border-radius:6px; background:var(--surface-2); margin-bottom:8px; animation: skeleton-shimmer 1.4s infinite;"></div>
+          <div style="height:12px; width:90%; border-radius:6px; background:var(--surface-2); margin-bottom:6px; animation: skeleton-shimmer 1.4s infinite;"></div>
+          <div style="height:12px; width:60%; border-radius:6px; background:var(--surface-2); animation: skeleton-shimmer 1.4s infinite;"></div>
+        </div>
+      </div>
+    `).join('');
+  },
+
   initCategoryTabs() {
     document.querySelectorAll('.category-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -87,6 +105,18 @@ const Products = {
 
   async init() {
     this.initCategoryTabs();
+    this.showSkeletons(); // Show loading skeletons immediately
+
+    // Wait for Firebase module to finish initializing
+    // Handles the case where firebase-init.js (type="module") fires after DOMContentLoaded
+    await new Promise(resolve => {
+      if (window.FirebaseDB) {
+        resolve();
+      } else {
+        window.addEventListener('firebase-ready', resolve, { once: true });
+      }
+    });
+
     await this.loadProducts();
     this.renderProducts('all');
   }
