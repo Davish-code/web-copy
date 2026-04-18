@@ -8,16 +8,24 @@ const Orders = {
     if (!user || !window.FirebaseDB || !window.FirestoreCollection) return [];
 
     try {
+      // Query without orderBy to avoid needing a Firestore composite index
       const q = window.FirestoreQuery(
         window.FirestoreCollection(window.FirebaseDB, "orders"),
-        window.FirestoreWhere("userId", "==", user.uid),
-        window.FirestoreOrderBy("date", "desc")
+        window.FirestoreWhere("userId", "==", user.uid)
       );
       const querySnapshot = await window.FirestoreGetDocs(q);
       const orders = [];
       querySnapshot.forEach((doc) => {
         orders.push({ id: doc.id, ...doc.data() });
       });
+      
+      // Sort orders client-side by date descending
+      orders.sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateB - dateA;
+      });
+      
       return orders;
     } catch (error) {
       console.error("Error getting orders: ", error);
