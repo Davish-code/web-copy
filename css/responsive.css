@@ -1,0 +1,67 @@
+/* ===== TABLET: 1024px ===== */
+@media (max-width: 1024px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .checkout-container { grid-template-columns: 1fr; }
+  .map-container { grid-template-columns: 1fr; }
+  .hero-stats { gap: 32px; }
+}
+
+/* ===== TABLET SMALL: 768px ===== */
+@media (max-width: 768px) {
+  .nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    width: 100%;
+    background: rgba(15, 10, 7, 0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 24px;
+    gap: 0;
+    border-bottom: 1px solid var(--border-color);
+    transform: translateY(-120%);
+    transition: transform var(--transition-med);
+    z-index: 999;
+  }
+  .nav-links.open { transform: translateY(0); }
+  .nav-links li { width: 100%; }
+  .nav-links a {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+  }
+  .hamburger { display: flex; }
+  .hero h1 { font-size: 2.2rem; }
+  .hero-stats { flex-direction: column; gap: 20px; }
+  .products-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .cart-item { flex-wrap: wrap; }
+  .cart-item-price { min-width: auto; }
+  .profile-header { flex-direction: column; text-align: center; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+  .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+}
+
+/* ===== MOBILE: 480px ===== */
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .page-section { padding: 60px 0; }
+  .hero { min-height: 90vh; }
+  .hero-content { padding: 0 8px; }
+  .hero-buttons { flex-direction: column; }
+  .hero-buttons .btn { width: 100%; }
+  .products-grid { grid-template-columns: 1fr; }
+  .category-tabs { gap: 8px; }
+  .category-tab { padding: 8px 16px; font-size: 0.8rem; }
+  .product-card-img { height: 200px; }
+  .cart-item { padding: 16px; gap: 14px; }
+  .cart-item-img { width: 70px; height: 70px; }
+  .auth-container { padding: 24px; }
+  .checkout-container { gap: 20px; }
+  .checkout-form-section, .checkout-summary { padding: 20px; }
+  .section-header { margin-bottom: 32px; }
+  .lightbox img { max-width: 95vw; }
+  .lightbox-prev, .lightbox-next { width: 36px; height: 36px; font-size: 1rem; }
+  .toast { min-width: auto; margin: 0 16px; }
+}

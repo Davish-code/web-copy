@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="YUMEI Bakery — Premium artisan cheesecakes, cakes, and cookies crafted with love in Raipur. Order online for delivery.">
+  <title>YUMEI — Artisan Bakery & Patisserie</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <div class="nav-logo">YUMEI<span></span></div>
+      <ul class="nav-links">
+        <li><a href="#" data-section="hero" class="active">Home</a></li>
+        <li><a href="#" data-section="menu">Menu</a></li>
+        <li><a href="#" data-section="gallery-section">Gallery</a></li>
+        <li><a href="#" data-section="profile">My Account</a></li>
+      </ul>
+      <div class="nav-icons">
+        <button class="nav-icon-btn" id="nav-cart-btn" title="Cart">
+          🛒
+          <span class="cart-badge" id="cart-badge">0</span>
+        </button>
+        <button class="nav-icon-btn" id="nav-profile-btn" title="Profile">
+          <span id="nav-profile-icon">👤</span>
+        </button>
+        <button class="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section id="hero" class="hero">
+    <div class="hero-bg">
+      <img src="assets/images/hero-banner.png" alt="YUMEI Bakery">
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-badge">✨ Artisan Baked Goodness</span>
+        <h1>Baked with Passion, Served with Love</h1>
+        <p>Experience the finest cheesecakes, cakes, and cookies — handcrafted daily using premium ingredients at YUMEI.</p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary" onclick="App.navigate('menu')">Explore Menu</button>
+          <button class="btn btn-secondary" onclick="App.navigate('gallery-section')">View Gallery</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <h3>50+</h3>
+            <p>Unique Recipes</p>
+          </div>
+          <div class="hero-stat">
+            <h3>10K+</h3>
+            <p>Happy Customers</p>
+          </div>
+          <div class="hero-stat">
+            <h3>4.9★</h3>
+            <p>Average Rating</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MENU / PRODUCTS SECTION ===== -->
+  <section id="menu" class="page-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Our Menu</h2>
+        <p class="subtitle">Freshly baked every day with the finest ingredients</p>
+        <div class="accent-line"></div>
+      </div>
+      <div class="category-tabs">
+        <button class="category-tab active" data-category="all">All</button>
+        <button class="category-tab" data-category="cheesecakes">🧀 Cheesecakes</button>
+        <button class="category-tab" data-category="cakes">🎂 Cakes</button>
+        <button class="category-tab" data-category="cookies">🍪 Cookies</button>
+      </div>
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== GALLERY SECTION ===== -->
+  <section id="gallery-section" class="page-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Gallery</h2>
+        <p class="subtitle">A peek into our bakery creations</p>
+        <div class="accent-line"></div>
+      </div>
+      <div class="category-tabs">
+        <button class="gallery-tab category-tab active" data-category="all">All</button>
+        <button class="gallery-tab category-tab" data-category="cheesecakes">Cheesecakes</button>
+        <button class="gallery-tab category-tab" data-category="cakes">Cakes</button>
+        <button class="gallery-tab category-tab" data-category="cookies">Cookies</button>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== CART SECTION ===== -->
+  <section id="cart" class="page-section section-hidden">
+    <div class="container">
+      <div class="section-header">
+        <h2>Your Cart</h2>
+        <p class="subtitle">Review your items before checkout</p>
+        <div class="accent-line"></div>
+      </div>
+      <div class="cart-container">
+        <div id="cart-items"></div>
+        <div class="cart-summary" id="cart-summary"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CHECKOUT SECTION ===== -->
+  <section id="checkout" class="page-section section-hidden">
+    <div class="container">
+      <div class="section-header">
+        <h2>Checkout</h2>
+        <p class="subtitle">Complete your order</p>
+        <div class="accent-line"></div>
+      </div>
+      <div id="checkout-content"></div>
+    </div>
+  </section>
+
+  <!-- ===== PROFILE SECTION ===== -->
+  <section id="profile" class="page-section section-hidden">
+    <div class="container">
+      <div class="section-header">
+        <h2>My Account</h2>
+        <p class="subtitle">Manage your profile and view orders</p>
+        <div class="accent-line"></div>
+      </div>
+      <div id="profile-content"></div>
+    </div>
+  </section>
+
+  <!-- ===== OUTLET MAP SECTION ===== -->
+  <section id="outlet-map" class="page-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Visit Our Outlet</h2>
+        <p class="subtitle">Come say hello and try our freshly baked goods</p>
+        <div class="accent-line"></div>
+      </div>
+      <div class="map-container">
+        <div class="map-iframe">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3718.854!2d81.6296!3d21.2514!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a28dde07005edf9%3A0x1!2sNew%20Rajendra%20Nagar%2C%20Raipur%2C%20Chhattisgarh%20492001!5e0!3m2!1sen!2sin!4v1" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="map-info">
+          <h3>YUMEI Bakery</h3>
+          <div class="map-info-item">
+            <i>📍</i>
+            <div>
+              <strong>Address</strong>
+              <p>New Rajendra Nagar, Raipur, Chhattisgarh 492001</p>
+            </div>
+          </div>
+          <div class="map-info-item">
+            <i>🕐</i>
+            <div>
+              <strong>Working Hours</strong>
+              <p>Mon - Sat: 9:00 AM — 9:00 PM<br>Sunday: 10:00 AM — 6:00 PM</p>
+            </div>
+          </div>
+          <div class="map-info-item">
+            <i>📞</i>
+            <div>
+              <strong>Contact</strong>
+              <p>+91 98XXX XXXXX<br>hello@yumei.in</p>
+            </div>
+          </div>
+          <div class="map-info-item">
+            <i>🚚</i>
+            <div>
+              <strong>Delivery</strong>
+              <p>Free delivery on orders above ₹1,000<br>Flat ₹49 delivery for smaller orders</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">YUMEI<span>.</span></div>
+          <p>Premium artisan bakery crafting cheesecakes, cakes, and cookies with love since 2020.</p>
+          <div class="footer-social">
+            <a href="#" title="Instagram">📷</a>
+            <a href="#" title="Facebook">📘</a>
+            <a href="#" title="Twitter">🐦</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#" onclick="App.navigate('hero')">Home</a></li>
+            <li><a href="#" onclick="App.navigate('menu')">Menu</a></li>
+            <li><a href="#" onclick="App.navigate('gallery-section')">Gallery</a></li>
+            <li><a href="#" onclick="App.navigate('profile')">My Account</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="#" onclick="App.navigate('menu')">Cheesecakes</a></li>
+            <li><a href="#" onclick="App.navigate('menu')">Cakes</a></li>
+            <li><a href="#" onclick="App.navigate('menu')">Cookies</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <ul>
+            <li>📍New Rajendra Nagar, Raipur</li>
+            <li>📞+91 98XXX XXXXX</li>
+            <li>✉️hello@yumei.in</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 YUMEI Bakery. All rights reserved. Crafted with ❤️</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== LIGHTBOX ===== -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="Gallery.closeLightbox()">✕</button>
+    <button class="lightbox-prev" onclick="Gallery.prevImage()">◀</button>
+    <img id="lightbox-img" src="" alt="">
+    <button class="lightbox-next" onclick="Gallery.nextImage()">▶</button>
+    <p id="lightbox-caption" style="position:absolute;bottom:24px;color:var(--text-secondary);font-size:0.9rem;"></p>
+  </div>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script type="module" src="js/firebase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/checkout.js"></script>
+  <script src="js/orders.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
