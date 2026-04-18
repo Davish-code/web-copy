@@ -2,27 +2,53 @@
 
 const Checkout = {
 
-  // Load saved delivery details for this user from Firestore
+  // Load saved delivery details — checks user_profiles first, then last order as fallback
   async loadSavedProfile(uid) {
     try {
-      if (!window.FirebaseDB || !window.FirestoreDoc || !window.FirestoreGetDoc) return null;
-      const ref = window.FirestoreDoc(window.FirebaseDB, "user_profiles", uid);
-      const snap = await window.FirestoreGetDoc(ref);
-      return snap.exists() ? snap.data() : null;
+      if (!window.FirebaseDB) return null;
+
+      // 1. Try the fast user_profiles document first
+      if (window.FirestoreDoc && window.FirestoreGetDoc) {
+        const ref = window.FirestoreDoc(window.FirebaseDB, "user_profiles", uid);
+        const snap = await window.FirestoreGetDoc(ref);
+        if (snap.exists()) return snap.data();
+      }
+
+      // 2. Fallback: pull details from the most recent order
+      if (window.FirestoreQuery && window.FirestoreCollection && window.FirestoreWhere && window.FirestoreGetDocs) {
+        const q = window.FirestoreQuery(
+          window.FirestoreCollection(window.FirebaseDB, "orders"),
+          window.FirestoreWhere("userId", "==", uid)
+        );
+        const snapshot = await window.FirestoreGetDocs(q);
+        const orders = [];
+        snapshot.forEach(doc => orders.push(doc.data()));
+        if (orders.length > 0) {
+          // Sort client-side to get latest order
+          orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+          return orders[0].customer || null;
+        }
+      }
+
+      return null;
     } catch (err) {
       console.warn("Could not load saved profile:", err);
       return null;
     }
   },
 
-  // Save delivery details back to Firestore so next checkout is pre-filled
+  // Save delivery details back to Firestore + localStorage so next checkout is pre-filled
   async saveProfileDetails(uid, details) {
+    // Always write to localStorage immediately (instant, no network)
+    try { localStorage.setItem('yumei_delivery_' + uid, JSON.stringify(details)); } catch(e) {}
+
+    // Also persist to Firestore for cross-device sync
     try {
       if (!window.FirebaseDB || !window.FirestoreDoc || !window.FirestoreSetDoc) return;
       const ref = window.FirestoreDoc(window.FirebaseDB, "user_profiles", uid);
       await window.FirestoreSetDoc(ref, details, { merge: true });
     } catch (err) {
-      console.warn("Could not save profile details:", err);
+      console.warn("Could not save profile to Firestore:", err);
     }
   },
 
@@ -62,10 +88,14 @@ const Checkout = {
     // Fetch previously saved profile (phone + address)
     const saved = await this.loadSavedProfile(user.uid);
 
-    const prefillName    = saved?.name    || user.displayName || '';
-    const prefillPhone   = saved?.phone   || '';
-    const prefillEmail   = saved?.email   || user.email || '';
-    const prefillAddress = saved?.address || '';
+    // Also check localStorage as instant fallback (always written after each order)
+    let local = null;
+    try { local = JSON.parse(localStorage.getItem('yumei_delivery_' + user.uid) || 'null'); } catch(e) {}
+
+    const prefillName    = saved?.name    || local?.name    || user.displayName || '';
+    const prefillPhone   = saved?.phone   || local?.phone   || '';
+    const prefillEmail   = saved?.email   || local?.email   || user.email || '';
+    const prefillAddress = saved?.address || local?.address || '';
 
     container.innerHTML = `
       <div class="checkout-container">
