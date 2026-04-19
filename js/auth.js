@@ -152,7 +152,7 @@ const Auth = {
         }
       } catch (error) {
         console.error("Geocoding error:", error);
-        Utils.showToast("Failed to fetch address", "error");
+        Utils.showToast("Failed to fetch address details", "error");
       } finally {
         btn.disabled = false;
         btnText.style.display = 'inline';
@@ -161,7 +161,24 @@ const Auth = {
     }, (error) => {
       console.error("Geolocation error:", error);
       let msg = "Could not get your location";
-      if (error.code === 1) msg = "Location permission denied";
+      
+      switch(error.code) {
+        case 1: // PERMISSION_DENIED
+          msg = "Permission denied. Please enable location in your browser settings.";
+          break;
+        case 2: // POSITION_UNAVAILABLE
+          msg = "Location unavailable. Check your device GPS/Wi-Fi.";
+          break;
+        case 3: // TIMEOUT
+          msg = "Request timed out. Please try again.";
+          break;
+      }
+      
+      // Special check for file:// protocol
+      if (window.location.protocol === 'file:') {
+        msg = "GPS requires a server (http/https). It won't work opening the file directly.";
+      }
+
       Utils.showToast(msg, "error");
       
       btn.disabled = false;
@@ -169,7 +186,7 @@ const Auth = {
       btnLoader.style.display = 'none';
     }, {
       enableHighAccuracy: true,
-      timeout: 5000,
+      timeout: 10000,
       maximumAge: 0
     });
   },
