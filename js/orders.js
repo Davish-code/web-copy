@@ -2,6 +2,7 @@
 
 const Orders = {
   STORAGE_KEY: 'yumei_orders',
+  _allOrders: [], // Cache for fetched orders to allow quick lookup
 
   async getOrders() {
     const user = Auth.getCurrentUser();
@@ -18,6 +19,8 @@ const Orders = {
       querySnapshot.forEach((doc) => {
         orders.push({ id: doc.id, ...doc.data() });
       });
+      
+      this._allOrders = orders; // Store in cache
       
       // Sort orders client-side by date descending
       orders.sort((a, b) => {
@@ -81,8 +84,13 @@ const Orders = {
               <span class="order-id">${order.id}</span>
               <span class="order-date"> — ${Utils.formatDate(order.date)}</span>
             </div>
-            <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
-            <span class="order-total">${Utils.formatCurrency(order.total)}</span>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
+              <span class="order-total">${Utils.formatCurrency(order.total)}</span>
+              <button class="order-download-btn" onclick="event.stopPropagation(); Orders.downloadInvoiceById('${order.id}')" title="Download Invoice">
+                📄
+              </button>
+            </div>
           </div>
           <div class="order-details">
             <div class="order-details-content">
@@ -107,5 +115,158 @@ const Orders = {
   toggleOrder(headerEl) {
     const details = headerEl.nextElementSibling;
     details.classList.toggle('expanded');
+  },
+
+  downloadInvoiceById(orderId) {
+    const order = this._allOrders.find(o => o.id === orderId);
+    if (!order) {
+      Utils.showToast('Order details not found.', 'error');
+      return;
+    }
+    this.downloadInvoice(order);
+  },
+
+  downloadInvoice(order) {
+    if (!order) { Utils.showToast('No order data provided.', 'error'); return; }
+    const date = Utils.formatDate(order.date);
+    const itemRows = (order.items || []).map(item => `
+      <tr>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;">${item.name}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;text-align:center;">${item.qty}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;text-align:right;">₹${Number(item.price).toLocaleString('en-IN')}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;text-align:right;">₹${Number(item.price * item.qty).toLocaleString('en-IN')}</td>
+      </tr>`).join('');
+
+    const invoiceHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice — ${order.id}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #2d2013; font-size: 14px; line-height: 1.6; }
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 40px; }
+
+    /* Header */
+    .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 3px solid #d4a056; }
+    .inv-brand { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: #d4a056; letter-spacing: 3px; }
+    .inv-brand span { color: #2d2013; font-weight: 400; }
+    .inv-title-block { text-align: right; }
+    .inv-title-block h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #2d2013; letter-spacing: 1px; }
+    .inv-title-block .inv-id { font-size: 0.85rem; color: #8b7355; margin-top: 4px; letter-spacing: 0.5px; }
+    .inv-title-block .inv-date { font-size: 0.85rem; color: #8b7355; }
+
+    /* Meta grid */
+    .inv-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px; }
+    .inv-meta-box { background: #fdf8f3; border: 1px solid #f0e8dd; border-radius: 8px; padding: 16px 20px; }
+    .inv-meta-box h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: #a07848; margin-bottom: 10px; }
+    .inv-meta-box p { font-size: 0.9rem; color: #2d2013; margin-bottom: 4px; }
+    .inv-meta-box .muted { color: #8b7355; font-size: 0.85rem; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+    thead tr { background: #2d2013; }
+    thead th { padding: 12px 12px; color: #f5e6d3; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+    thead th:first-child { text-align: left; border-radius: 6px 0 0 6px; }
+    thead th:last-child { text-align: right; border-radius: 0 6px 6px 0; }
+    thead th:not(:first-child):not(:last-child) { text-align: center; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* Totals */
+    .inv-totals { margin-left: auto; width: 280px; }
+    .inv-total-row { display: flex; justify-content: space-between; padding: 8px 0; color: #5a4030; font-size: 0.9rem; border-bottom: 1px solid #f0e8dd; }
+    .inv-total-row:last-child { border-bottom: none; padding-top: 12px; margin-top: 4px; font-size: 1.1rem; font-weight: 700; color: #2d2013; }
+    .inv-total-row:last-child span:last-child { color: #d4a056; }
+
+    /* Footer */
+    .inv-footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #f0e8dd; display: flex; justify-content: space-between; align-items: center; }
+    .inv-footer p { font-size: 0.8rem; color: #8b7355; }
+    .inv-badge { background: #fdf8f3; border: 1px solid #d4a056; border-radius: 20px; padding: 6px 16px; font-size: 0.75rem; color: #a07848; font-weight: 600; letter-spacing: 0.5px; }
+
+    .status-badge { display: inline-block; background: #fff3e0; color: #e67e00; border: 1px solid #f4c06f; border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; font-weight: 600; text-transform: capitalize; }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="inv-header">
+    <div>
+      <div class="inv-brand">YUMEI<span>.</span></div>
+      <div style="font-size:0.8rem;color:#8b7355;margin-top:4px;">Artisan Bakery & Patisserie</div>
+      <div style="font-size:0.8rem;color:#8b7355;">New Rajendra Nagar, Raipur, CG 492001</div>
+    </div>
+    <div class="inv-title-block">
+      <h2>INVOICE</h2>
+      <div class="inv-id">Order ID: <strong>${order.id}</strong></div>
+      <div class="inv-date">Date: ${date}</div>
+      <div style="margin-top:8px;"><span class="status-badge">${order.status || 'Processing'}</span></div>
+    </div>
+  </div>
+
+  <div class="inv-meta">
+    <div class="inv-meta-box">
+      <h4>Bill To</h4>
+      <p><strong>${order.customer?.name || '—'}</strong></p>
+      <p class="muted">${order.customer?.email || '—'}</p>
+      <p class="muted">${order.customer?.phone || '—'}</p>
+    </div>
+    <div class="inv-meta-box">
+      <h4>Deliver To</h4>
+      <p>${order.customer?.address || '—'}</p>
+      ${order.customer?.notes ? `<p class="muted" style="margin-top:6px;">Note: ${order.customer.notes}</p>` : ''}
+    </div>
+    <div class="inv-meta-box">
+      <h4>Payment</h4>
+      <p>${order.payment}</p>
+    </div>
+    <div class="inv-meta-box">
+      <h4>Items Ordered</h4>
+      <p>${(order.items || []).length} item(s)</p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th style="text-align:center;">Qty</th>
+        <th style="text-align:right;">Unit Price</th>
+        <th style="text-align:right;">Total</th>
+      </tr>
+    </thead>
+    <tbody>${itemRows}</tbody>
+  </table>
+
+  <div class="inv-totals">
+    <div class="inv-total-row"><span>Subtotal</span><span>₹${Number(order.subtotal || 0).toLocaleString('en-IN')}</span></div>
+    <div class="inv-total-row"><span>GST (5%)</span><span>₹${Number(order.tax || 0).toLocaleString('en-IN')}</span></div>
+    <div class="inv-total-row"><span>Delivery</span><span>${(order.delivery === 0 || order.delivery === '0') ? 'FREE' : '₹' + Number(order.delivery || 0).toLocaleString('en-IN')}</span></div>
+    <div class="inv-total-row"><span>Grand Total</span><span>₹${Number(order.total || 0).toLocaleString('en-IN')}</span></div>
+  </div>
+
+  <div class="inv-footer">
+    <p>Thank you for choosing YUMEI. We hope you love every bite! 🍰</p>
+    <div class="inv-badge">YUMEI Bakery</div>
+  </div>
+
+</div>
+<script>window.onload = () => { window.print(); };<\/script>
+</body>
+</html>`;
+
+    // Open invoice in a new tab — browser print dialog lets user save as PDF
+    const win = window.open('', '_blank', 'width=800,height=900');
+    if (win) {
+      win.document.write(invoiceHTML);
+      win.document.close();
+    } else {
+      Utils.showToast('Please allow pop-ups to download the invoice.', 'error');
+    }
   }
 };

@@ -440,6 +440,26 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   font-weight: 600;
   color: var(--text-primary);
 }
+.order-download-btn {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--accent-gold);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 0.9rem;
+}
+.order-download-btn:hover {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+}
 .order-details {
   max-height: 0;
   overflow: hidden;
