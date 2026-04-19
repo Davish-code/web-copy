@@ -118,6 +118,31 @@ const Products = {
       
       return `<button class="category-tab ${isActive ? 'active' : ''}" data-category="${cat}">${label}</button>`;
     }).join('');
+
+    // Also update footer categories if it exists
+    const footerContainer = document.getElementById('footer-categories');
+    if (footerContainer) {
+      footerContainer.innerHTML = this.categories.map(cat => {
+        const label = cat.charAt(0).toUpperCase() + cat.slice(1);
+        return `<li><a href="#" onclick="Products.filterAndNavigate('${cat}')">${label}</a></li>`;
+      }).join('');
+    }
+  },
+
+  filterAndNavigate(category) {
+    this.currentCategory = category;
+    App.navigate('menu');
+    // The renderProducts call is already triggered by App.navigate('menu') if we set it up right,
+    // or we can call it here explicitly to be sure.
+    this.renderProducts(category);
+    
+    // Also update active tab UI in the menu section
+    const container = document.getElementById('category-tabs-menu');
+    if (container) {
+      container.querySelectorAll('.category-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.category === category);
+      });
+    }
   },
 
   initCategoryTabs() {
