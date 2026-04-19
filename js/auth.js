@@ -39,16 +39,10 @@ const Auth = {
       if (user) {
         const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
         profileIcon.innerHTML = initial;
-        profileIcon.style.background = 'linear-gradient(135deg, var(--accent-gold), var(--accent-rose))';
-        profileIcon.style.color = '#fff';
-        profileIcon.style.fontSize = '0.85rem';
-        profileIcon.style.fontWeight = '700';
+        profileIcon.classList.add('logged-in');
       } else {
         profileIcon.innerHTML = '👤';
-        profileIcon.style.background = '';
-        profileIcon.style.color = '';
-        profileIcon.style.fontSize = '';
-        profileIcon.style.fontWeight = '';
+        profileIcon.classList.remove('logged-in');
       }
     }
   },

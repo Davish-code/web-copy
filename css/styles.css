@@ -160,8 +160,35 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
   padding: 8px;
   border-radius: 50%;
   transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .nav-icon-btn:hover { color: var(--accent-gold); background: var(--bg-glass); }
+
+#nav-profile-btn { padding: 4px; }
+#nav-profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all var(--transition-med);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+#nav-profile-icon.logged-in {
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(212, 160, 86, 0.25);
+}
 .cart-badge {
   position: absolute;
   top: 0; right: 0;

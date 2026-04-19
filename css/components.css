@@ -395,17 +395,19 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   margin-bottom: 32px;
 }
 .profile-avatar {
-  width: 80px; height: 80px;
+  width: 90px; height: 90px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: #fff;
   font-family: var(--font-heading);
   font-weight: 700;
   flex-shrink: 0;
+  box-shadow: 0 8px 25px rgba(181, 101, 107, 0.3);
+  border: 4px solid rgba(255, 255, 255, 0.1);
 }
 .profile-info h2 { font-size: 1.5rem; margin-bottom: 4px; }
 .profile-info p { color: var(--text-muted); font-size: 0.9rem; }
