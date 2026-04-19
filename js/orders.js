@@ -17,7 +17,7 @@ const Orders = {
       const querySnapshot = await window.FirestoreGetDocs(q);
       const orders = [];
       querySnapshot.forEach((doc) => {
-        orders.push({ id: doc.id, ...doc.data() });
+        orders.push({ docId: doc.id, ...doc.data() });
       });
       
       this._allOrders = orders; // Store in cache
@@ -96,7 +96,7 @@ const Orders = {
               
               ${order.status === 'processing' ? `
                 <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.7rem; text-transform: none; border-color: var(--accent-rose); color: var(--accent-rose);" 
-                  onclick="event.stopPropagation(); Orders.requestCancellation('${order.id}')">
+                  onclick="event.stopPropagation(); Orders.requestCancellation('${order.docId}')">
                   Cancel?
                 </button>
               ` : ''}
@@ -126,7 +126,7 @@ const Orders = {
     }).join('');
   },
 
-  async requestCancellation(orderId) {
+  async requestCancellation(docId) {
     const confirmCancel = confirm("Are you sure you want to request cancellation for this order?");
     if (!confirmCancel) return;
 
@@ -136,14 +136,7 @@ const Orders = {
         return;
       }
 
-      // Find the order object in our local cache to get its real Firestore ID if orderId is just the random reference
-      const orderObj = this._allOrders.find(o => o.id === orderId);
-      if (!orderObj) {
-        Utils.showToast("Order not found.", "error");
-        return;
-      }
-
-      const orderRef = window.FirestoreDoc(window.FirebaseDB, "orders", orderId);
+      const orderRef = window.FirestoreDoc(window.FirebaseDB, "orders", docId);
       await window.FirestoreUpdateDoc(orderRef, {
         status: 'cancellation_requested',
         cancelRequestedAt: new Date().toISOString()
