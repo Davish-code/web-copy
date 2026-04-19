@@ -76,7 +76,13 @@ const Orders = {
     }
 
     container.innerHTML = orders.map(order => {
-      const statusLabels = { processing: 'Processing', shipped: 'Shipped', delivered: 'Delivered' };
+      const statusLabels = { 
+        processing: 'Processing', 
+        shipped: 'Shipped', 
+        delivered: 'Delivered',
+        cancellation_requested: 'Cancel Requested'
+      };
+      
       return `
         <div class="order-card">
           <div class="order-card-header" onclick="Orders.toggleOrder(this)">
@@ -87,6 +93,14 @@ const Orders = {
             <div style="display:flex; align-items:center; gap:12px;">
               <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
               <span class="order-total">${Utils.formatCurrency(order.total)}</span>
+              
+              ${order.status === 'processing' ? `
+                <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.7rem; text-transform: none; border-color: var(--accent-rose); color: var(--accent-rose);" 
+                  onclick="event.stopPropagation(); Orders.requestCancellation('${order.id}')">
+                  Cancel?
+                </button>
+              ` : ''}
+
               <button class="order-download-btn" onclick="event.stopPropagation(); Orders.downloadInvoiceById('${order.id}')" title="Download Invoice">
                 📄
               </button>
@@ -110,6 +124,37 @@ const Orders = {
           </div>
         </div>`;
     }).join('');
+  },
+
+  async requestCancellation(orderId) {
+    const confirmCancel = confirm("Are you sure you want to request cancellation for this order?");
+    if (!confirmCancel) return;
+
+    try {
+      if (!window.FirebaseDB || !window.FirestoreDoc || !window.FirestoreUpdateDoc) {
+        Utils.showToast("Firestore not available", "error");
+        return;
+      }
+
+      // Find the order object in our local cache to get its real Firestore ID if orderId is just the random reference
+      const orderObj = this._allOrders.find(o => o.id === orderId);
+      if (!orderObj) {
+        Utils.showToast("Order not found.", "error");
+        return;
+      }
+
+      const orderRef = window.FirestoreDoc(window.FirebaseDB, "orders", orderId);
+      await window.FirestoreUpdateDoc(orderRef, {
+        status: 'cancellation_requested',
+        cancelRequestedAt: new Date().toISOString()
+      });
+
+      Utils.showToast("Cancellation request sent to admin.", "success");
+      this.renderOrderHistory(); // Refresh UI
+    } catch (error) {
+      console.error("Cancellation error:", error);
+      Utils.showToast("Failed to send cancellation request.", "error");
+    }
   },
 
   toggleOrder(headerEl) {

@@ -512,6 +512,7 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
 .order-status.processing { background: rgba(212, 160, 86, 0.15); color: var(--accent-gold); }
 .order-status.shipped { background: rgba(86, 160, 212, 0.15); color: #56a0d4; }
 .order-status.delivered { background: rgba(86, 180, 100, 0.15); color: #56b464; }
+.order-status.cancellation_requested { background: rgba(181, 101, 107, 0.15); color: var(--accent-rose); }
 .order-total {
   font-family: var(--font-heading);
   font-weight: 600;
