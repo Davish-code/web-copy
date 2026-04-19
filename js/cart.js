@@ -16,7 +16,7 @@ const Cart = {
     const product = Products.getProductById(productId);
     if (!product) return;
 
-    if (product.outofstock === true || product.outofstock === 'true') {
+    if (product.outOfStock === true || product.outOfStock === 'true') {
       Utils.showToast(`${product.name} is currently out of stock`, 'error');
       return;
     }
@@ -134,7 +134,7 @@ const Cart = {
 
   buyNow(productId) {
     const product = Products.getProductById(productId);
-    if (product && (product.outofstock === true || product.outofstock === 'true')) {
+    if (product && (product.outOfStock === true || product.outOfStock === 'true')) {
       Utils.showToast(`${product.name} is currently out of stock`, 'error');
       return;
     }

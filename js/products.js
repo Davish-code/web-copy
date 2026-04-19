@@ -41,7 +41,7 @@ const Products = {
     }
 
     grid.innerHTML = filtered.map((p, i) => {
-      const isOutOfStock = p.outofstock === true || p.outofstock === 'true';
+      const isOutOfStock = p.outOfStock === true || p.outOfStock === 'true';
       return `
       <div class="product-card animate-in ${isOutOfStock ? 'out-of-stock' : ''}" style="animation-delay: ${i * 0.08}s">
         <div class="product-card-img">
