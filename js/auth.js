@@ -110,6 +110,10 @@ const Auth = {
                     <span class="btn-text">Update Location via GPS</span>
                     <span class="btn-loader" style="display:none">📍 Fetching...</span>
                   </button>
+                  <span style="color:var(--text-muted); font-size: 0.7rem; margin: 0 4px;">or</span>
+                  <button class="location-btn" onclick="Auth.showManualAddressInput()">
+                    <span>Enter manually</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -207,6 +211,66 @@ const Auth = {
       timeout: 10000,
       maximumAge: 0
     });
+  },
+  
+  showManualAddressInput() {
+    const detailsContainer = document.querySelector('.location-details');
+    if (!detailsContainer) return;
+    
+    const currentAddress = document.getElementById('location-address').innerText;
+    const isPlaceholder = currentAddress === 'No address set yet' || currentAddress === 'Loading address...';
+    
+    detailsContainer.innerHTML = `
+      <div class="manual-address-form">
+        <textarea id="manual-address-input" class="manual-address-input" rows="2" placeholder="Enter your full address">${isPlaceholder ? '' : currentAddress}</textarea>
+        <div class="manual-address-actions">
+          <button class="manual-address-btn save" onclick="Auth.saveManualAddress()">Save Address</button>
+          <button class="manual-address-btn cancel" onclick="Auth.cancelManualAddress()">Cancel</button>
+        </div>
+      </div>
+    `;
+    
+    // Auto focus and place cursor at end
+    const input = document.getElementById('manual-address-input');
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  },
+
+  async saveManualAddress() {
+    const input = document.getElementById('manual-address-input');
+    const address = input.value.trim();
+    const user = this.getCurrentUser();
+    
+    if (!user) return;
+    if (!address) {
+      Utils.showToast("Please enter an address", "error");
+      return;
+    }
+    
+    const saveBtn = document.querySelector('.manual-address-btn.save');
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Saving...';
+    
+    try {
+      const currentProfile = await Checkout.loadSavedProfile(user.uid) || {};
+      await Checkout.saveProfileDetails(user.uid, {
+        ...currentProfile,
+        address: address
+      });
+      
+      Utils.showToast("Address saved successfully!", "success");
+      this.updateNavUI();
+      this.renderProfileSection(); // Refresh the whole section to show the updated address normally
+    } catch (error) {
+      console.error("Save address error:", error);
+      Utils.showToast("Failed to save address", "error");
+      saveBtn.disabled = false;
+      saveBtn.innerText = 'Save Address';
+    }
+  },
+
+  cancelManualAddress() {
+    this.renderProfileSection(); // Just re-render to go back to original state
   },
 
   init() {

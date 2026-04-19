@@ -460,6 +460,55 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
 .location-btn:hover { opacity: 0.8; }
 .location-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.manual-address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+.manual-address-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+.manual-address-input:focus {
+  border-color: var(--accent-gold);
+}
+.manual-address-actions {
+  display: flex;
+  gap: 10px;
+}
+.manual-address-btn {
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.manual-address-btn.save {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  border: none;
+}
+.manual-address-btn.cancel {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+.manual-address-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
 /* ===== CHECKOUT ===== */
 .checkout-container {
   display: grid;
