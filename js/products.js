@@ -3,6 +3,12 @@
 const Products = {
   currentCategory: 'all',
   items: [],
+  categories: [],
+  categoryEmojis: {
+    'cheesecakes': '🧀',
+    'cakes': '🎂',
+    'cookies': '🍪'
+  },
 
   async loadProducts() {
     try {
@@ -13,6 +19,12 @@ const Products = {
       snapshot.forEach(doc => {
         this.items.push(doc.data());
       });
+
+      // Extract unique categories
+      const unique = [...new Set(this.items.map(p => p.category).filter(Boolean))];
+      // Ensure defaults are there if they exist in items, or just take all unique
+      this.categories = unique.sort();
+
       return true;
     } catch (err) {
       console.error("Failed to load products: ", err);
@@ -93,13 +105,32 @@ const Products = {
     `).join('');
   },
 
+  renderCategoryTabs() {
+    const container = document.getElementById('category-tabs-menu');
+    if (!container) return;
+
+    const categories = ['all', ...this.categories];
+    
+    container.innerHTML = categories.map(cat => {
+      const isActive = cat === this.currentCategory;
+      const emoji = this.categoryEmojis[cat.toLowerCase()] || '🍰';
+      const label = cat === 'all' ? 'All' : `${emoji} ${cat.charAt(0).toUpperCase() + cat.slice(1)}`;
+      
+      return `<button class="category-tab ${isActive ? 'active' : ''}" data-category="${cat}">${label}</button>`;
+    }).join('');
+  },
+
   initCategoryTabs() {
-    document.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        this.renderProducts(tab.dataset.category);
-      });
+    const container = document.getElementById('category-tabs-menu');
+    if (!container) return;
+
+    container.addEventListener('click', (e) => {
+      const tab = e.target.closest('.category-tab');
+      if (!tab) return;
+
+      container.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      this.renderProducts(tab.dataset.category);
     });
   },
 
@@ -122,6 +153,7 @@ const Products = {
     });
 
     await this.loadProducts();
+    this.renderCategoryTabs(); // Render dynamic tabs
     this.renderProducts('all');
   }
 };
