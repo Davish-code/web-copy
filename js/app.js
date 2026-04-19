@@ -84,8 +84,13 @@ const App = {
     document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
   },
 
-  init() {
+  async init() {
     this.initNavigation();
+    
+    // Load dynamic store configuration first
+    await Config.load();
+    this.updateInfoPlaceholders();
+
     Products.init();
     Cart.init();
     Auth.init();
@@ -94,6 +99,13 @@ const App = {
 
     // Show home by default
     this.navigate('hero');
+  },
+
+  updateInfoPlaceholders() {
+    const freeLimit = document.getElementById('info-free-limit');
+    const delCharge = document.getElementById('info-delivery-charge');
+    if (freeLimit) freeLimit.innerText = `₹${Config.data.freeDeliveryMin.toLocaleString('en-IN')}`;
+    if (delCharge) delCharge.innerText = `₹${Config.data.deliveryCharge.toLocaleString('en-IN')}`;
   }
 };
 

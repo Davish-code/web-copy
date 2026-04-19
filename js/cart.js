@@ -59,13 +59,34 @@ const Cart = {
 
   getCartTotal() {
     const cart = this.getCart();
-    const subtotal = cart.reduce((sum, item) => {
+    let subtotal = 0;
+    let tax = 0;
+    
+    cart.forEach(item => {
       const product = Products.getProductById(item.id);
-      return sum + (product ? product.price * item.qty : 0);
-    }, 0);
-    const tax = Math.round(subtotal * 0.05);
-    const delivery = subtotal > 0 ? (subtotal >= 1000 ? 0 : 49) : 0;
-    return { subtotal, tax, delivery, total: subtotal + tax + delivery };
+      if (product) {
+        const itemSubtotal = product.price * item.qty;
+        subtotal += itemSubtotal;
+        // Use product-specific GST or fallback to 5%
+        const gstPercent = parseFloat(product.gst !== undefined ? product.gst : 5) / 100;
+        tax += itemSubtotal * gstPercent;
+      }
+    });
+
+    tax = Math.round(tax);
+    
+    // Dynamic delivery and convenience fee
+    const { freeDeliveryMin, deliveryCharge, convenienceFeeEnabled, convenienceFeeAmount } = Config.data;
+    const delivery = subtotal > 0 ? (subtotal >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
+    const convenienceFee = (subtotal > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
+    
+    return { 
+      subtotal, 
+      tax, 
+      delivery, 
+      convenienceFee,
+      total: subtotal + tax + delivery + convenienceFee 
+    };
   },
 
   getItemCount() {
@@ -124,7 +145,8 @@ const Cart = {
       summaryEl.style.display = 'block';
       summaryEl.innerHTML = `
         <div class="cart-summary-row"><span>Subtotal</span><span>${Utils.formatCurrency(totals.subtotal)}</span></div>
-        <div class="cart-summary-row"><span>GST (5%)</span><span>${Utils.formatCurrency(totals.tax)}</span></div>
+        <div class="cart-summary-row"><span>GST</span><span>${Utils.formatCurrency(totals.tax)}</span></div>
+        ${totals.convenienceFee > 0 ? `<div class="cart-summary-row"><span>Convenience Fee</span><span>${Utils.formatCurrency(totals.convenienceFee)}</span></div>` : ''}
         <div class="cart-summary-row"><span>Delivery</span><span>${totals.delivery === 0 ? 'FREE' : Utils.formatCurrency(totals.delivery)}</span></div>
         <div class="cart-summary-row total"><span>Total</span><span>${Utils.formatCurrency(totals.total)}</span></div>
         <button class="btn btn-primary" style="width:100%;margin-top:20px" onclick="App.navigate('checkout')">Proceed to Checkout</button>`;

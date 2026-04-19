@@ -145,7 +145,8 @@ const Checkout = {
     }).join('')}
           <hr style="border:none;border-top:1px solid var(--border-color);margin:16px 0;">
           <div class="checkout-summary-item"><span>Subtotal</span><span>${Utils.formatCurrency(totals.subtotal)}</span></div>
-          <div class="checkout-summary-item"><span>GST (5%)</span><span>${Utils.formatCurrency(totals.tax)}</span></div>
+          <div class="checkout-summary-item"><span>GST</span><span>${Utils.formatCurrency(totals.tax)}</span></div>
+          ${totals.convenienceFee > 0 ? `<div class="checkout-summary-item"><span>Convenience Fee</span><span>${Utils.formatCurrency(totals.convenienceFee)}</span></div>` : ''}
           <div class="checkout-summary-item"><span>Delivery</span><span>${totals.delivery === 0 ? 'FREE' : Utils.formatCurrency(totals.delivery)}</span></div>
           <div class="checkout-summary-item" style="font-size:1.1rem;font-weight:700;color:var(--accent-gold);margin-top:8px;padding-top:12px;border-top:1px solid var(--border-color);">
             <span>Total</span><span>${Utils.formatCurrency(totals.total)}</span>
