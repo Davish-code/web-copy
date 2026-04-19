@@ -133,6 +133,33 @@
 }
 .product-card-actions { display: flex; gap: 8px; }
 
+/* Out of Stock State */
+.product-card.out-of-stock {
+  opacity: 0.8;
+  filter: grayscale(0.4);
+}
+.product-card.out-of-stock .product-card-img::after {
+  content: 'OUT OF STOCK';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  background: rgba(196, 80, 80, 0.9);
+  color: #fff;
+  padding: 8px 20px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+.product-card.out-of-stock .btn {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 /* ===== CATEGORY TABS ===== */
 .category-tabs {
   display: flex;

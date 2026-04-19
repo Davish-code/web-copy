@@ -40,8 +40,10 @@ const Products = {
       return;
     }
 
-    grid.innerHTML = filtered.map((p, i) => `
-      <div class="product-card animate-in" style="animation-delay: ${i * 0.08}s">
+    grid.innerHTML = filtered.map((p, i) => {
+      const isOutOfStock = p.outofstock === true || p.outofstock === 'true';
+      return `
+      <div class="product-card animate-in ${isOutOfStock ? 'out-of-stock' : ''}" style="animation-delay: ${i * 0.08}s">
         <div class="product-card-img">
           <img src="${p.image}" alt="${p.name}" loading="lazy"
                onerror="this.src=''; this.onerror=null; this.style.background='var(--surface-2)';">
@@ -58,13 +60,15 @@ const Products = {
           <div class="product-card-footer">
             <span class="product-price">${Utils.formatCurrency(p.price)}</span>
             <div class="product-card-actions">
-              <button class="btn btn-sm btn-secondary" onclick="Cart.addToCart('${p.id}')" title="Add to Cart">🛒</button>
-              <button class="btn btn-sm btn-primary" onclick="Cart.buyNow('${p.id}')">Buy Now</button>
+              <button class="btn btn-sm btn-secondary" onclick="Cart.addToCart('${p.id}')" title="Add to Cart" ${isOutOfStock ? 'disabled' : ''}>🛒</button>
+              <button class="btn btn-sm btn-primary" onclick="Cart.buyNow('${p.id}')" ${isOutOfStock ? 'disabled' : ''}>
+                ${isOutOfStock ? 'Out of Stock' : 'Buy Now'}
+              </button>
             </div>
           </div>
         </div>
       </div>
-    `).join('');
+    `}).join('');
 
     // Animate in
     requestAnimationFrame(() => {

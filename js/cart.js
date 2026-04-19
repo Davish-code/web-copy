@@ -16,6 +16,11 @@ const Cart = {
     const product = Products.getProductById(productId);
     if (!product) return;
 
+    if (product.outofstock === true || product.outofstock === 'true') {
+      Utils.showToast(`${product.name} is currently out of stock`, 'error');
+      return;
+    }
+
     const cart = this.getCart();
     const existing = cart.find(item => item.id === productId);
 
@@ -128,6 +133,11 @@ const Cart = {
   },
 
   buyNow(productId) {
+    const product = Products.getProductById(productId);
+    if (product && (product.outofstock === true || product.outofstock === 'true')) {
+      Utils.showToast(`${product.name} is currently out of stock`, 'error');
+      return;
+    }
     const cart = [{ id: productId, qty: 1 }];
     this.saveCart(cart);
     this.updateBadge();
