@@ -166,6 +166,26 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
 }
 .nav-icon-btn:hover { color: var(--accent-gold); background: var(--bg-glass); }
 
+.nav-profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.nav-address-text {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  max-width: 60px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: -4px;
+  pointer-events: none;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
 #nav-profile-btn { padding: 4px; }
 #nav-profile-icon {
   display: flex;

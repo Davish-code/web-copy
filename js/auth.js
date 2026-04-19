@@ -32,17 +32,32 @@ const Auth = {
     }
   },
 
-  updateNavUI() {
+  async updateNavUI() {
     const user = this.getCurrentUser();
     const profileIcon = document.getElementById('nav-profile-icon');
+    const navAddress = document.getElementById('nav-address-text');
+    
     if (profileIcon) {
       if (user) {
         const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
         profileIcon.innerHTML = initial;
         profileIcon.classList.add('logged-in');
+        
+        // Load and show address in navbar
+        if (navAddress) {
+          const profile = await Checkout.loadSavedProfile(user.uid);
+          if (profile && profile.address) {
+            // Extract a short version of the address (e.g., city or first part)
+            const parts = profile.address.split(',');
+            navAddress.innerHTML = parts[0]; 
+          } else {
+            navAddress.innerHTML = '';
+          }
+        }
       } else {
         profileIcon.innerHTML = '👤';
         profileIcon.classList.remove('logged-in');
+        if (navAddress) navAddress.innerHTML = '';
       }
     }
   },
@@ -145,6 +160,9 @@ const Auth = {
             ...currentProfile,
             address: address
           });
+          
+          // Sync navbar
+          this.updateNavUI();
           
           Utils.showToast("Location updated successfully!", "success");
         } else {
