@@ -47,7 +47,7 @@ const Auth = {
     }
   },
 
-  renderProfileSection() {
+  async renderProfileSection() {
     const section = document.getElementById('profile-content');
     if (!section) return;
 
@@ -70,6 +70,16 @@ const Auth = {
         </div>`;
     } else {
       const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+      
+      // Load saved address
+      let savedAddress = 'Loading address...';
+      const saved = await Checkout.loadSavedProfile(user.uid);
+      if (saved && saved.address) {
+        savedAddress = saved.address;
+      } else {
+        savedAddress = 'No address set yet';
+      }
+
       section.innerHTML = `
         <div class="profile-container">
           <div class="profile-header">
@@ -77,6 +87,16 @@ const Auth = {
             <div class="profile-info">
               <h2>${user.displayName || 'User'}</h2>
               <p>${user.email}</p>
+              <div class="profile-location" id="profile-location-box">
+                <i class="location-icon">📍</i>
+                <div class="location-details">
+                  <span id="location-address">${savedAddress}</span>
+                  <button class="location-btn" onclick="Auth.fetchCurrentLocation()">
+                    <span class="btn-text">Update Location via GPS</span>
+                    <span class="btn-loader" style="display:none">📍 Fetching...</span>
+                  </button>
+                </div>
+              </div>
             </div>
             <button class="btn btn-secondary btn-sm" onclick="Auth.logout()" style="margin-left:auto">Logout</button>
           </div>
@@ -87,6 +107,71 @@ const Auth = {
         </div>`;
       Orders.renderOrderHistory('profile-orders');
     }
+  },
+
+  async fetchCurrentLocation() {
+    if (!navigator.geolocation) {
+      Utils.showToast("Geolocation is not supported by your browser", "error");
+      return;
+    }
+
+    const user = this.getCurrentUser();
+    if (!user) return;
+
+    const btn = document.querySelector('.location-btn');
+    const btnText = btn.querySelector('.btn-text');
+    const btnLoader = btn.querySelector('.btn-loader');
+    const addressSpan = document.getElementById('location-address');
+
+    btn.disabled = true;
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline';
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+      
+      try {
+        // Reverse Geocoding using Nominatim (OpenStreetMap)
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+        const data = await response.json();
+        
+        if (data && data.display_name) {
+          const address = data.display_name;
+          addressSpan.innerText = address;
+          
+          // Save to profile
+          const currentProfile = await Checkout.loadSavedProfile(user.uid) || {};
+          await Checkout.saveProfileDetails(user.uid, {
+            ...currentProfile,
+            address: address
+          });
+          
+          Utils.showToast("Location updated successfully!", "success");
+        } else {
+          Utils.showToast("Could not determine address from coordinates", "error");
+        }
+      } catch (error) {
+        console.error("Geocoding error:", error);
+        Utils.showToast("Failed to fetch address", "error");
+      } finally {
+        btn.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+      }
+    }, (error) => {
+      console.error("Geolocation error:", error);
+      let msg = "Could not get your location";
+      if (error.code === 1) msg = "Location permission denied";
+      Utils.showToast(msg, "error");
+      
+      btn.disabled = false;
+      btnText.style.display = 'inline';
+      btnLoader.style.display = 'none';
+    }, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    });
   },
 
   init() {
