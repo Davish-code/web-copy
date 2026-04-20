@@ -61,7 +61,7 @@ const Cart = {
     const cart = this.getCart();
     let subtotal = 0;
     let tax = 0;
-    
+
     cart.forEach(item => {
       const product = Products.getProductById(item.id);
       if (product) {
@@ -74,18 +74,18 @@ const Cart = {
     });
 
     tax = Math.round(tax);
-    
+
     // Dynamic delivery and convenience fee
     const { freeDeliveryMin, deliveryCharge, convenienceFeeEnabled, convenienceFeeAmount } = Config.data;
     const delivery = subtotal > 0 ? (subtotal >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
     const convenienceFee = (subtotal > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
-    
-    return { 
-      subtotal, 
-      tax, 
-      delivery, 
+
+    return {
+      subtotal,
+      tax,
+      delivery,
       convenienceFee,
-      total: subtotal + tax + delivery + convenienceFee 
+      total: subtotal + tax + delivery + convenienceFee
     };
   },
 
