@@ -568,24 +568,43 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   color: var(--text-primary);
 }
 .order-download-btn {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-color);
-  color: var(--accent-gold);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #d4a056 0%, #b5656b 100%);
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
   cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(212, 160, 86, 0.30);
   transition: all var(--transition-fast);
-  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.order-download-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
 }
 .order-download-btn:hover {
-  background: var(--accent-gold);
-  color: var(--bg-primary);
-  border-color: var(--accent-gold);
+  background: linear-gradient(135deg, #e8b468 0%, #c5757b 100%);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 160, 86, 0.45);
+}
+.order-download-btn:hover::after {
+  left: 130%;
 }
 .order-details {
   max-height: 0;
