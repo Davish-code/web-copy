@@ -22,12 +22,13 @@ const Cart = {
     }
 
     const cart = this.getCart();
-    const existing = cart.find(item => item.id === productId);
+    // Only merge if no add-ons on this item
+    const existing = cart.find(item => item.id === productId && !item.addons?.length);
 
     if (existing) {
       existing.qty += qty;
     } else {
-      cart.push({ id: productId, qty });
+      cart.push({ id: productId, qty, addons: [], addonExtra: 0, cookingRequest: '' });
     }
 
     this.saveCart(cart);
@@ -35,20 +36,44 @@ const Cart = {
     this.renderCart();
   },
 
-  removeFromCart(productId) {
-    let cart = this.getCart().filter(item => item.id !== productId);
+  // Called by Addons module after user selects options
+  addToCartWithAddons(productId, qty = 1, addons = [], addonExtra = 0, cookingRequest = '') {
+    const product = Products.getProductById(productId);
+    if (!product) return;
+
+    if (product.outOfStock === true || product.outOfStock === 'true') {
+      Utils.showToast(`${product.name} is currently out of stock`, 'error');
+      return;
+    }
+
+    const cart = this.getCart();
+    // Each add-on combo is stored as a separate line item (so user can have multiple combos)
+    cart.push({ id: productId, qty, addons, addonExtra, cookingRequest });
+
+    this.saveCart(cart);
+    Utils.showToast(`${product.name} added to cart!`, 'success');
+    this.renderCart();
+  },
+
+  removeFromCart(productId, cartIndex) {
+    let cart = this.getCart();
+    if (cartIndex !== undefined) {
+      cart.splice(cartIndex, 1);
+    } else {
+      cart = cart.filter(item => item.id !== productId);
+    }
     this.saveCart(cart);
     Utils.showToast('Item removed from cart', 'info');
     this.renderCart();
   },
 
-  updateQuantity(productId, qty) {
+  updateQuantity(productId, qty, cartIndex) {
     const cart = this.getCart();
-    const item = cart.find(i => i.id === productId);
+    const item = cartIndex !== undefined ? cart[cartIndex] : cart.find(i => i.id === productId);
     if (!item) return;
 
     if (qty <= 0) {
-      this.removeFromCart(productId);
+      this.removeFromCart(productId, cartIndex);
       return;
     }
 
@@ -65,23 +90,20 @@ const Cart = {
     cart.forEach(item => {
       const product = Products.getProductById(item.id);
       if (product) {
-        // The product.price is EXCLUSIVE of GST
-        // We want to calculate the inclusive price per item and use it for subtotal
         let itemInclusivePrice = Utils.getInclusivePrice(product.price, product.gst);
-        
+
         if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
           const discountAmount = itemInclusivePrice * (Config.data.discountPercentage / 100);
           itemInclusivePrice = Math.round(itemInclusivePrice - discountAmount);
         }
 
-        const itemTotalInclusive = itemInclusivePrice * item.qty;
-        
-        // Calculate the tax portion (approximate based on discounted total)
-        // Original logic was: const itemBaseTotal = product.price * item.qty;
-        // Since we discounted the inclusive price, we should reverse-calculate the tax if we want to be precise,
-        // or just apply the same discount % to base price and tax.
+        // Add add-on extras to the unit price
+        const addonExtra = item.addonExtra || 0;
+        const unitPrice = itemInclusivePrice + addonExtra;
+        const itemTotalInclusive = unitPrice * item.qty;
+
         const itemBasePrice = itemInclusivePrice / (1 + (product.gst / 100));
-        const itemTax = itemTotalInclusive - (itemBasePrice * item.qty);
+        const itemTax = (itemInclusivePrice - itemBasePrice) * item.qty;
 
         subtotal += itemTotalInclusive;
         tax += itemTax;
@@ -136,20 +158,36 @@ const Cart = {
       return;
     }
 
-    container.innerHTML = cart.map(item => {
+    container.innerHTML = cart.map((item, idx) => {
       const p = Products.getProductById(item.id);
       if (!p) return '';
+
+      // Add-ons display tags
+      const addonsHtml = (item.addons && item.addons.length > 0)
+        ? `<div style="margin-top:5px; display:flex; flex-wrap:wrap; gap:4px;">
+            ${item.addons.map(a => `
+              <span style="font-size:0.72rem; padding:2px 8px; background:rgba(252,225,213,0.08); border:1px solid var(--border-color); border-radius:20px; color:var(--text-muted);">
+                ${a.name}${a.price > 0 ? ` +${Utils.formatCurrency(a.price)}` : ''}
+              </span>`).join('')}
+          </div>`
+        : '';
+      const cookingHtml = item.cookingRequest
+        ? `<div style="margin-top:5px; font-size:0.78rem; color:var(--text-muted); font-style:italic;">📝 ${item.cookingRequest}</div>`
+        : '';
+
       return `
         <div class="cart-item">
           <div class="cart-item-img"><img src="${p.image}" alt="${p.name}"></div>
           <div class="cart-item-info">
             <h4>${p.name}</h4>
             <span class="cart-item-cat">${p.category}</span>
+            ${addonsHtml}
+            ${cookingHtml}
           </div>
           <div class="cart-item-qty">
-            <button class="qty-btn" onclick="Cart.updateQuantity('${p.id}', ${item.qty - 1})">−</button>
+            <button class="qty-btn" onclick="Cart.updateQuantity('${p.id}', ${item.qty - 1}, ${idx})">−</button>
             <span>${item.qty}</span>
-            <button class="qty-btn" onclick="Cart.updateQuantity('${p.id}', ${item.qty + 1})">+</button>
+            <button class="qty-btn" onclick="Cart.updateQuantity('${p.id}', ${item.qty + 1}, ${idx})">+</button>
           </div>
           <div class="cart-item-price">
             ${(() => {
@@ -157,19 +195,23 @@ const Cart = {
               let finalPrice = originalPrice;
               if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
                 finalPrice = Math.round(originalPrice - (originalPrice * (Config.data.discountPercentage / 100)));
+              }
+              const unitWithAddons = finalPrice + (item.addonExtra || 0);
+              if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
                 return `
                   <div style="display:flex; flex-direction:column; align-items:flex-end;">
                     <del style="font-size:0.75em; color:var(--text-muted); line-height:1;">${Utils.formatCurrency(originalPrice * item.qty)}</del>
-                    <span>${Utils.formatCurrency(finalPrice * item.qty)}</span>
+                    <span>${Utils.formatCurrency(unitWithAddons * item.qty)}</span>
                   </div>
                 `;
               }
-              return Utils.formatCurrency(finalPrice * item.qty);
+              return Utils.formatCurrency(unitWithAddons * item.qty);
             })()}
           </div>
-          <button class="cart-item-remove" onclick="Cart.removeFromCart('${p.id}')" title="Remove">✕</button>
+          <button class="cart-item-remove" onclick="Cart.removeFromCart('${p.id}', ${idx})" title="Remove">✕</button>
         </div>`;
     }).join('');
+
 
     if (summaryEl) {
       const totals = this.getCartTotal();
@@ -191,7 +233,7 @@ const Cart = {
       Utils.showToast(`${product.name} is currently out of stock`, 'error');
       return;
     }
-    const cart = [{ id: productId, qty: 1 }];
+    const cart = [{ id: productId, qty: 1, addons: [], addonExtra: 0, cookingRequest: '' }];
     this.saveCart(cart);
     this.updateBadge();
     App.navigate('checkout');

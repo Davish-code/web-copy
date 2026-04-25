@@ -194,7 +194,16 @@ const Checkout = {
         if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
           finalPrice = Math.round(finalPrice - (finalPrice * (Config.data.discountPercentage / 100)));
         }
-        return { id: item.id, name: p?.name, price: finalPrice, qty: item.qty, image: p?.image };
+        const unitPrice = finalPrice + (item.addonExtra || 0);
+        return {
+          id: item.id,
+          name: p?.name,
+          price: unitPrice,
+          qty: item.qty,
+          image: p?.image,
+          addons: item.addons || [],
+          cookingRequest: item.cookingRequest || ''
+        };
       }),
       customer: { name, phone, email, address, notes },
       payment: payment === 'cod' ? 'Cash on Delivery' : 'Card Payment',

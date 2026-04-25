@@ -94,9 +94,12 @@ const Products = {
           <div class="product-card-footer">
             ${priceHtml}
             <div class="product-card-actions">
-              <button class="btn btn-sm btn-secondary" onclick="Cart.addToCart('${p.id}')" title="Add to Cart" ${isOutOfStock ? 'disabled' : ''}>🛒</button>
-              <button class="btn btn-sm btn-primary" onclick="Cart.buyNow('${p.id}')" ${isOutOfStock ? 'disabled' : ''}>
-                ${isOutOfStock ? 'Out of Stock' : 'Buy Now'}
+              <button class="btn btn-sm btn-secondary"
+                onclick="${p.addons && p.addons.length > 0 ? `Addons.open('${p.id}')` : `Cart.addToCart('${p.id}')`}"
+                title="Add to Cart" ${isOutOfStock ? 'disabled' : ''}>🛒</button>
+              <button class="btn btn-sm btn-primary"
+                onclick="${p.addons && p.addons.length > 0 ? `Addons.open('${p.id}')` : `Cart.buyNow('${p.id}')`}" ${isOutOfStock ? 'disabled' : ''}>
+                ${isOutOfStock ? 'Out of Stock' : 'Order Now'}
               </button>
             </div>
           </div>
@@ -202,5 +205,6 @@ const Products = {
     await this.loadProducts();
     this.renderCategoryTabs(); // Render dynamic tabs
     this.renderProducts('all');
+    if (typeof Addons !== 'undefined') Addons.init();
   }
 };

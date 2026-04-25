@@ -108,12 +108,21 @@ const Orders = {
           </div>
           <div class="order-details">
             <div class="order-details-content">
-              ${order.items.map(item => `
-                <div class="order-detail-item">
-                  <span>${item.name} × ${item.qty}</span>
-                  <span>${Utils.formatCurrency(item.price * item.qty)}</span>
-                </div>
-              `).join('')}
+              ${order.items.map(item => {
+                const addonsText = (item.addons && item.addons.length > 0)
+                  ? item.addons.map(a => `${a.name}${a.price > 0 ? ` (+${Utils.formatCurrency(a.price)})` : ''}`).join(', ')
+                  : '';
+                return `
+                  <div class="order-detail-item" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                      <span>${item.name} × ${item.qty}</span>
+                      <span>${Utils.formatCurrency(item.price * item.qty)}</span>
+                    </div>
+                    ${addonsText ? `<span style="font-size:0.78rem; color:var(--text-muted);">Add-ons: ${addonsText}</span>` : ''}
+                    ${item.cookingRequest ? `<span style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">📝 ${item.cookingRequest}</span>` : ''}
+                  </div>
+                `;
+              }).join('')}
               <div class="order-detail-item" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border-color);font-weight:600;color:var(--text-primary);">
                 <span>Total</span>
                 <span style="color:var(--accent-gold);">${Utils.formatCurrency(order.total)}</span>
