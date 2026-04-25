@@ -88,12 +88,12 @@ const Orders = {
       
       return `
         <div class="order-card">
-          <div class="order-card-header" onclick="Orders.toggleOrder(this)">
-            <div>
+          <div class="order-card-header" onclick="Orders.toggleOrder(this)" style="flex-wrap: wrap; gap: 16px;">
+            <div style="flex: 1; min-width: 200px;">
               <span class="order-id">${order.id}</span>
               <span class="order-date"> — ${Utils.formatDate(order.date)}</span>
             </div>
-            <div style="display:flex; align-items:center; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap: wrap;">
               <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
               <span class="order-total">${Utils.formatCurrency(order.total)}</span>
               
@@ -117,7 +117,8 @@ const Orders = {
                   ? item.addons.map(a => `${a.name}${a.price > 0 ? ` (+${Utils.formatCurrency(a.price)})` : ''}`).join(', ')
                   : '';
                 return `
-                  <div class="order-detail-item" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                  <div class="order-detail-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                       <span>${item.name} × ${item.qty}</span>
                       <div style="display:flex; align-items:center; gap:10px;">
                         ${(() => {
