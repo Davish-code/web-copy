@@ -281,9 +281,9 @@ const Orders = {
     <tbody>${itemRows}</tbody>
   </table>
 
-  <div class="inv-totals">
+    <div class="inv-totals">
     <div class="inv-total-row"><span>Subtotal</span><span>₹${Number(order.subtotal || 0).toLocaleString('en-IN')}</span></div>
-    <div class="inv-total-row"><span>GST</span><span>₹${Number(order.tax || 0).toLocaleString('en-IN')}</span></div>
+    <div class="inv-total-row"><span>GST (Included)</span><span>₹${Number(order.tax || 0).toLocaleString('en-IN')}</span></div>
     ${order.convenienceFee > 0 ? `<div class="inv-total-row"><span>Convenience Fee</span><span>₹${Number(order.convenienceFee).toLocaleString('en-IN')}</span></div>` : ''}
     <div class="inv-total-row"><span>Delivery</span><span>${(order.delivery === 0 || order.delivery === '0') ? 'FREE' : '₹' + Number(order.delivery || 0).toLocaleString('en-IN')}</span></div>
     <div class="inv-total-row"><span>Grand Total</span><span>₹${Number(order.total || 0).toLocaleString('en-IN')}</span></div>

@@ -75,26 +75,25 @@ const Cart = {
         const itemBasePrice = itemTotal / (1 + gstPercent);
         const itemTax = itemTotal - itemBasePrice;
 
-        subtotal += itemBasePrice;
+        subtotal += itemTotal;
         tax += itemTax;
       }
     });
 
     tax = Math.round(tax);
     subtotal = Math.round(subtotal);
-    const productTotalInclusive = subtotal + tax;
 
     // Dynamic delivery and convenience fee
     const { freeDeliveryMin, deliveryCharge, convenienceFeeEnabled, convenienceFeeAmount } = Config.data;
-    const delivery = productTotalInclusive > 0 ? (productTotalInclusive >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
-    const convenienceFee = (productTotalInclusive > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
+    const delivery = subtotal > 0 ? (subtotal >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
+    const convenienceFee = (subtotal > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
 
     return {
       subtotal,
       tax,
       delivery,
       convenienceFee,
-      total: productTotalInclusive + delivery + convenienceFee
+      total: subtotal + delivery + convenienceFee
     };
   },
 
@@ -154,7 +153,7 @@ const Cart = {
       summaryEl.style.display = 'block';
       summaryEl.innerHTML = `
         <div class="cart-summary-row"><span>Subtotal</span><span>${Utils.formatCurrency(totals.subtotal)}</span></div>
-        <div class="cart-summary-row"><span>GST</span><span>${Utils.formatCurrency(totals.tax)}</span></div>
+        <div class="cart-summary-row" style="font-size:0.85rem; color:var(--text-muted);"><span>Includes GST</span><span>${Utils.formatCurrency(totals.tax)}</span></div>
         ${totals.convenienceFee > 0 ? `<div class="cart-summary-row"><span>Convenience Fee</span><span>${Utils.formatCurrency(totals.convenienceFee)}</span></div>` : ''}
         <div class="cart-summary-row"><span>Delivery</span><span>${totals.delivery === 0 ? 'FREE' : Utils.formatCurrency(totals.delivery)}</span></div>
         <div class="cart-summary-row total"><span>Total</span><span>${Utils.formatCurrency(totals.total)}</span></div>
