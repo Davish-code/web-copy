@@ -5,6 +5,11 @@ const Utils = {
     return '₹' + Number(amount).toLocaleString('en-IN');
   },
 
+  getInclusivePrice(price, gstPercent) {
+    const gst = parseFloat(gstPercent !== undefined && gstPercent !== '' ? gstPercent : 5);
+    return Math.round(Number(price) * (1 + gst / 100));
+  },
+
   generateId() {
     return 'YUM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
   },

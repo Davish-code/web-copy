@@ -70,7 +70,7 @@ const Products = {
             <span class="count">(${p.reviews || 0})</span>
           </div>
           <div class="product-card-footer">
-            <span class="product-price">${Utils.formatCurrency(p.price)}</span>
+            <span class="product-price">${Utils.formatCurrency(Utils.getInclusivePrice(p.price, p.gst))}</span>
             <div class="product-card-actions">
               <button class="btn btn-sm btn-secondary" onclick="Cart.addToCart('${p.id}')" title="Add to Cart" ${isOutOfStock ? 'disabled' : ''}>🛒</button>
               <button class="btn btn-sm btn-primary" onclick="Cart.buyNow('${p.id}')" ${isOutOfStock ? 'disabled' : ''}>

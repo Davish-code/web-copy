@@ -141,7 +141,8 @@ const Checkout = {
           ${cart.map(item => {
       const p = Products.getProductById(item.id);
       if (!p) return '';
-      return `<div class="checkout-summary-item"><span>${p.name} × ${item.qty}</span><span>${Utils.formatCurrency(p.price * item.qty)}</span></div>`;
+      const inclusivePrice = Utils.getInclusivePrice(p.price, p.gst);
+      return `<div class="checkout-summary-item"><span>${p.name} × ${item.qty}</span><span>${Utils.formatCurrency(inclusivePrice * item.qty)}</span></div>`;
     }).join('')}
           <hr style="border:none;border-top:1px solid var(--border-color);margin:16px 0;">
           <div class="checkout-summary-item"><span>Subtotal</span><span>${Utils.formatCurrency(totals.subtotal)}</span></div>
@@ -186,7 +187,7 @@ const Checkout = {
       date: new Date().toISOString(),
       items: cart.map(item => {
         const p = Products.getProductById(item.id);
-        return { id: item.id, name: p?.name, price: p?.price, qty: item.qty, image: p?.image };
+        return { id: item.id, name: p?.name, price: Utils.getInclusivePrice(p?.price, p?.gst), qty: item.qty, image: p?.image };
       }),
       customer: { name, phone, email, address, notes },
       payment: payment === 'cod' ? 'Cash on Delivery' : 'Card Payment',

@@ -65,17 +65,16 @@ const Cart = {
     cart.forEach(item => {
       const product = Products.getProductById(item.id);
       if (product) {
-        // The product.price is now considered INCLUSIVE of GST
-        const itemTotal = product.price * item.qty;
+        // The product.price is EXCLUSIVE of GST
+        // We want to calculate the inclusive price per item and use it for subtotal
+        const itemInclusivePrice = Utils.getInclusivePrice(product.price, product.gst);
+        const itemTotalInclusive = itemInclusivePrice * item.qty;
         
-        // Use product-specific GST or fallback to 5%
-        const gstPercent = parseFloat(product.gst !== undefined ? product.gst : 5) / 100;
-        
-        // Base Price = Item Total / (1 + gstPercent)
-        const itemBasePrice = itemTotal / (1 + gstPercent);
-        const itemTax = itemTotal - itemBasePrice;
+        // Calculate the tax portion
+        const itemBaseTotal = product.price * item.qty;
+        const itemTax = itemTotalInclusive - itemBaseTotal;
 
-        subtotal += itemTotal;
+        subtotal += itemTotalInclusive;
         tax += itemTax;
       }
     });
@@ -143,7 +142,7 @@ const Cart = {
             <span>${item.qty}</span>
             <button class="qty-btn" onclick="Cart.updateQuantity('${p.id}', ${item.qty + 1})">+</button>
           </div>
-          <div class="cart-item-price">${Utils.formatCurrency(p.price * item.qty)}</div>
+          <div class="cart-item-price">${Utils.formatCurrency(Utils.getInclusivePrice(p.price, p.gst) * item.qty)}</div>
           <button class="cart-item-remove" onclick="Cart.removeFromCart('${p.id}')" title="Remove">✕</button>
         </div>`;
     }).join('');
