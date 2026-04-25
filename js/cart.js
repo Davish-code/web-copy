@@ -67,12 +67,21 @@ const Cart = {
       if (product) {
         // The product.price is EXCLUSIVE of GST
         // We want to calculate the inclusive price per item and use it for subtotal
-        const itemInclusivePrice = Utils.getInclusivePrice(product.price, product.gst);
+        let itemInclusivePrice = Utils.getInclusivePrice(product.price, product.gst);
+        
+        if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
+          const discountAmount = itemInclusivePrice * (Config.data.discountPercentage / 100);
+          itemInclusivePrice = Math.round(itemInclusivePrice - discountAmount);
+        }
+
         const itemTotalInclusive = itemInclusivePrice * item.qty;
         
-        // Calculate the tax portion
-        const itemBaseTotal = product.price * item.qty;
-        const itemTax = itemTotalInclusive - itemBaseTotal;
+        // Calculate the tax portion (approximate based on discounted total)
+        // Original logic was: const itemBaseTotal = product.price * item.qty;
+        // Since we discounted the inclusive price, we should reverse-calculate the tax if we want to be precise,
+        // or just apply the same discount % to base price and tax.
+        const itemBasePrice = itemInclusivePrice / (1 + (product.gst / 100));
+        const itemTax = itemTotalInclusive - (itemBasePrice * item.qty);
 
         subtotal += itemTotalInclusive;
         tax += itemTax;
@@ -142,7 +151,22 @@ const Cart = {
             <span>${item.qty}</span>
             <button class="qty-btn" onclick="Cart.updateQuantity('${p.id}', ${item.qty + 1})">+</button>
           </div>
-          <div class="cart-item-price">${Utils.formatCurrency(Utils.getInclusivePrice(p.price, p.gst) * item.qty)}</div>
+          <div class="cart-item-price">
+            ${(() => {
+              let originalPrice = Utils.getInclusivePrice(p.price, p.gst);
+              let finalPrice = originalPrice;
+              if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
+                finalPrice = Math.round(originalPrice - (originalPrice * (Config.data.discountPercentage / 100)));
+                return `
+                  <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                    <del style="font-size:0.75em; color:var(--text-muted); line-height:1;">${Utils.formatCurrency(originalPrice * item.qty)}</del>
+                    <span>${Utils.formatCurrency(finalPrice * item.qty)}</span>
+                  </div>
+                `;
+              }
+              return Utils.formatCurrency(finalPrice * item.qty);
+            })()}
+          </div>
           <button class="cart-item-remove" onclick="Cart.removeFromCart('${p.id}')" title="Remove">✕</button>
         </div>`;
     }).join('');

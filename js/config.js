@@ -5,7 +5,9 @@ const Config = {
     deliveryCharge: 49,
     freeDeliveryMin: 1000,
     convenienceFeeEnabled: false,
-    convenienceFeeAmount: 0
+    convenienceFeeAmount: 0,
+    discountEnabled: false,
+    discountPercentage: 0
   },
 
   async load() {

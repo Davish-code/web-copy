@@ -54,12 +54,34 @@ const Products = {
 
     grid.innerHTML = filtered.map((p, i) => {
       const isOutOfStock = p.outOfStock === true || p.outOfStock === 'true';
+      const originalPrice = Utils.getInclusivePrice(p.price, p.gst);
+      let finalPrice = originalPrice;
+      let priceHtml = '';
+      let discountTag = '';
+
+      if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
+        const discountAmount = originalPrice * (Config.data.discountPercentage / 100);
+        finalPrice = Math.round(originalPrice - discountAmount);
+        
+        priceHtml = `
+          <div style="display:flex; flex-direction:column;">
+            <del style="font-size:0.75em; color:var(--text-muted); line-height:1;">${Utils.formatCurrency(originalPrice)}</del>
+            <span class="product-price">${Utils.formatCurrency(finalPrice)}</span>
+          </div>
+        `;
+        
+        discountTag = `<div class="discount-badge" style="position:absolute; top:10px; right:10px; background:var(--accent-gold); color:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:0.75rem; z-index:2; box-shadow:0 2px 4px rgba(0,0,0,0.2);">${Config.data.discountPercentage}% OFF</div>`;
+      } else {
+        priceHtml = `<span class="product-price">${Utils.formatCurrency(originalPrice)}</span>`;
+      }
+
       return `
-      <div class="product-card animate-in ${isOutOfStock ? 'out-of-stock' : ''}" style="animation-delay: ${i * 0.08}s">
+      <div class="product-card animate-in ${isOutOfStock ? 'out-of-stock' : ''}" style="animation-delay: ${i * 0.08}s; position:relative;">
         <div class="product-card-img">
           <img src="${p.image}" alt="${p.name}" loading="lazy"
                onerror="this.src=''; this.onerror=null; this.style.background='var(--surface-2)';">
           ${p.badge ? `<span class="product-card-badge">${p.badge}</span>` : ''}
+          ${discountTag}
         </div>
         <div class="product-card-body">
           <div class="product-card-category">${p.category}</div>
@@ -70,7 +92,7 @@ const Products = {
             <span class="count">(${p.reviews || 0})</span>
           </div>
           <div class="product-card-footer">
-            <span class="product-price">${Utils.formatCurrency(Utils.getInclusivePrice(p.price, p.gst))}</span>
+            ${priceHtml}
             <div class="product-card-actions">
               <button class="btn btn-sm btn-secondary" onclick="Cart.addToCart('${p.id}')" title="Add to Cart" ${isOutOfStock ? 'disabled' : ''}>🛒</button>
               <button class="btn btn-sm btn-primary" onclick="Cart.buyNow('${p.id}')" ${isOutOfStock ? 'disabled' : ''}>

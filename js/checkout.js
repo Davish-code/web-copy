@@ -141,7 +141,10 @@ const Checkout = {
           ${cart.map(item => {
       const p = Products.getProductById(item.id);
       if (!p) return '';
-      const inclusivePrice = Utils.getInclusivePrice(p.price, p.gst);
+      let inclusivePrice = Utils.getInclusivePrice(p.price, p.gst);
+      if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
+        inclusivePrice = Math.round(inclusivePrice - (inclusivePrice * (Config.data.discountPercentage / 100)));
+      }
       return `<div class="checkout-summary-item"><span>${p.name} × ${item.qty}</span><span>${Utils.formatCurrency(inclusivePrice * item.qty)}</span></div>`;
     }).join('')}
           <hr style="border:none;border-top:1px solid var(--border-color);margin:16px 0;">
@@ -187,7 +190,11 @@ const Checkout = {
       date: new Date().toISOString(),
       items: cart.map(item => {
         const p = Products.getProductById(item.id);
-        return { id: item.id, name: p?.name, price: Utils.getInclusivePrice(p?.price, p?.gst), qty: item.qty, image: p?.image };
+        let finalPrice = Utils.getInclusivePrice(p?.price, p?.gst);
+        if (Config.data.discountEnabled && Config.data.discountPercentage > 0) {
+          finalPrice = Math.round(finalPrice - (finalPrice * (Config.data.discountPercentage / 100)));
+        }
+        return { id: item.id, name: p?.name, price: finalPrice, qty: item.qty, image: p?.image };
       }),
       customer: { name, phone, email, address, notes },
       payment: payment === 'cod' ? 'Cash on Delivery' : 'Card Payment',
