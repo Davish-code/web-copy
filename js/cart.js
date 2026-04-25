@@ -65,27 +65,36 @@ const Cart = {
     cart.forEach(item => {
       const product = Products.getProductById(item.id);
       if (product) {
-        const itemSubtotal = product.price * item.qty;
-        subtotal += itemSubtotal;
+        // The product.price is now considered INCLUSIVE of GST
+        const itemTotal = product.price * item.qty;
+        
         // Use product-specific GST or fallback to 5%
         const gstPercent = parseFloat(product.gst !== undefined ? product.gst : 5) / 100;
-        tax += itemSubtotal * gstPercent;
+        
+        // Base Price = Item Total / (1 + gstPercent)
+        const itemBasePrice = itemTotal / (1 + gstPercent);
+        const itemTax = itemTotal - itemBasePrice;
+
+        subtotal += itemBasePrice;
+        tax += itemTax;
       }
     });
 
     tax = Math.round(tax);
+    subtotal = Math.round(subtotal);
+    const productTotalInclusive = subtotal + tax;
 
     // Dynamic delivery and convenience fee
     const { freeDeliveryMin, deliveryCharge, convenienceFeeEnabled, convenienceFeeAmount } = Config.data;
-    const delivery = subtotal > 0 ? ((subtotal + tax) >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
-    const convenienceFee = (subtotal > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
+    const delivery = productTotalInclusive > 0 ? (productTotalInclusive >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
+    const convenienceFee = (productTotalInclusive > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
 
     return {
       subtotal,
       tax,
       delivery,
       convenienceFee,
-      total: subtotal + tax + delivery + convenienceFee
+      total: productTotalInclusive + delivery + convenienceFee
     };
   },
 
