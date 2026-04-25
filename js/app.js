@@ -95,6 +95,7 @@ const App = {
     Cart.init();
     Auth.init();
     Gallery.init();
+    Reviews.init();
     this.initScrollAnimations();
 
     // Show home by default

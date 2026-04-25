@@ -115,9 +115,14 @@ const Orders = {
                   : '';
                 return `
                   <div class="order-detail-item" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                    <div style="display:flex; justify-content:space-between; width:100%;">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                       <span>${item.name} × ${item.qty}</span>
-                      <span>${Utils.formatCurrency(item.price * item.qty)}</span>
+                      <div style="display:flex; align-items:center; gap:10px;">
+                        ${order.status === 'delivered' ? `
+                          <button class="order-rate-btn" onclick="Reviews.openModal('${item.id}', '${order.id}')">Rate Item</button>
+                        ` : ''}
+                        <span>${Utils.formatCurrency(item.price * item.qty)}</span>
+                      </div>
                     </div>
                     ${addonsText ? `<span style="font-size:0.78rem; color:var(--text-muted);">Add-ons: ${addonsText}</span>` : ''}
                     ${item.cookingRequest ? `<span style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">📝 ${item.cookingRequest}</span>` : ''}

@@ -275,6 +275,30 @@
       </div>
     </div>
   </div>
+  
+  <!-- ===== REVIEW MODAL ===== -->
+  <div class="modal-overlay" id="review-modal-overlay">
+    <div class="modal" style="max-width: 400px; text-align: center;">
+      <button class="modal-close" onclick="Reviews.closeModal()">✕</button>
+      <h2 style="margin-bottom: 8px;">Rate & Review</h2>
+      <p id="review-product-name" style="color: var(--accent-gold); font-weight: 600; margin-bottom: 20px;"></p>
+      
+      <div class="rating-stars" style="font-size: 2.5rem; margin-bottom: 20px; cursor: pointer; display: flex; justify-content: center; gap: 8px;">
+        <span class="review-star">☆</span>
+        <span class="review-star">☆</span>
+        <span class="review-star">☆</span>
+        <span class="review-star">☆</span>
+        <span class="review-star">☆</span>
+      </div>
+      
+      <div class="form-group" style="text-align: left;">
+        <label>Share your experience (optional)</label>
+        <textarea id="review-comment" class="form-input" style="min-height: 100px; resize: none;" placeholder="Tell us what you liked!"></textarea>
+      </div>
+      
+      <button class="btn btn-primary btn-submit-review" style="width: 100%; margin-top: 10px;" onclick="Reviews.submitReview()">Submit Review</button>
+    </div>
+  </div>
 
   <!-- ===== LIGHTBOX ===== -->
   <div class="lightbox" id="lightbox">
@@ -296,6 +320,7 @@
   <script src="js/orders.js"></script>
   <script src="js/gallery.js"></script>
   <script src="js/addons.js"></script>
+  <script src="js/reviews.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -641,12 +641,45 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   padding: 0 20px 20px;
   border-top: 1px solid var(--border-color);
 }
-.order-detail-item {
+.review-star {
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+.review-star:hover, .review-star.selected {
+  color: var(--accent-gold);
+  transform: scale(1.1);
+  text-shadow: 0 0 10px rgba(212, 160, 86, 0.4);
+}
+.product-card-rating {
   display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.product-card-rating .stars {
+  color: var(--accent-gold);
+  letter-spacing: 2px;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+}
+.product-card-rating .count {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.order-rate-btn {
+  background: rgba(212, 160, 86, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--accent-gold);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.order-rate-btn:hover {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  transform: translateY(-1px);
 }
 
 /* ===== GALLERY ===== */
