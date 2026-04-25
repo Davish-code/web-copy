@@ -77,7 +77,7 @@ const Cart = {
 
     // Dynamic delivery and convenience fee
     const { freeDeliveryMin, deliveryCharge, convenienceFeeEnabled, convenienceFeeAmount } = Config.data;
-    const delivery = subtotal > 0 ? (subtotal >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
+    const delivery = subtotal > 0 ? ((subtotal + tax) >= freeDeliveryMin ? 0 : deliveryCharge) : 0;
     const convenienceFee = (subtotal > 0 && convenienceFeeEnabled) ? convenienceFeeAmount : 0;
 
     return {
