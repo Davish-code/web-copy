@@ -176,13 +176,31 @@ const Orders = {
   downloadInvoice(order) {
     if (!order) { Utils.showToast('No order data provided.', 'error'); return; }
     const date = Utils.formatDate(order.date);
-    const itemRows = (order.items || []).map(item => `
+    const itemRows = (order.items || []).map(item => {
+      const addonsHtml = (item.addons && item.addons.length > 0)
+        ? `<div style="margin-top:5px; display:flex; flex-wrap:wrap; gap:4px;">
+            ${item.addons.map(a =>
+              `<span style="font-size:0.72rem; padding:2px 8px; background:#fdf8f3; border:1px solid #f0e8dd; border-radius:20px; color:#8b7355;">
+                ${a.name}${a.price > 0 ? ` +₹${Number(a.price).toLocaleString('en-IN')}` : ''}
+              </span>`
+            ).join('')}
+          </div>`
+        : '';
+      const cookingHtml = item.cookingRequest
+        ? `<div style="margin-top:5px; font-size:0.78rem; color:#8b7355; font-style:italic;">📝 ${item.cookingRequest}</div>`
+        : '';
+      return `
       <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;">${item.name}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;">
+          <div>${item.name}</div>
+          ${addonsHtml}
+          ${cookingHtml}
+        </td>
         <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;text-align:center;">${item.qty}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;text-align:right;">₹${Number(item.price).toLocaleString('en-IN')}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #f0e8dd;text-align:right;">₹${Number(item.price * item.qty).toLocaleString('en-IN')}</td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
 
     const invoiceHTML = `<!DOCTYPE html>
 <html lang="en">
