@@ -63,6 +63,9 @@ const Orders = {
     // Show loading state
     container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted);">Loading orders...</div>`;
 
+    // Load user reviews first to know what has been rated
+    if (typeof Reviews !== 'undefined') await Reviews.loadUserReviews();
+
     const orders = await this.getOrders();
 
     if (orders.length === 0) {
@@ -115,12 +118,16 @@ const Orders = {
                   : '';
                 return `
                   <div class="order-detail-item" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                       <span>${item.name} × ${item.qty}</span>
                       <div style="display:flex; align-items:center; gap:10px;">
-                        ${order.status === 'delivered' ? `
-                          <button class="order-rate-btn" onclick="Reviews.openModal('${item.id}', '${order.id}')">Rate Item</button>
-                        ` : ''}
+                        ${(() => {
+                          if (order.status !== 'delivered') return '';
+                          const alreadyReviewed = typeof Reviews !== 'undefined' && Reviews.hasUserReviewed(item.id);
+                          if (alreadyReviewed) {
+                            return `<span style="font-size:0.7rem; color:var(--accent-gold); font-weight:600; background:rgba(212,160,86,0.1); padding:2px 8px; border-radius:4px;">★ Rated</span>`;
+                          }
+                          return `<button class="order-rate-btn" onclick="Reviews.openModal('${item.id}', '${order.id}')">Rate Item</button>`;
+                        })()}
                         <span>${Utils.formatCurrency(item.price * item.qty)}</span>
                       </div>
                     </div>

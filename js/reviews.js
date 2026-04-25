@@ -4,6 +4,7 @@ const Reviews = {
   selectedRating: 0,
   currentProductId: null,
   currentOrderId: null,
+  userReviews: [], // Cache for user's existing reviews to prevent duplicates
 
   openModal(productId, orderId) {
     this.currentProductId = productId;
@@ -22,6 +23,29 @@ const Reviews = {
     this.updateStars(0);
 
     modal.classList.add('active');
+  },
+
+  async loadUserReviews() {
+    const user = Auth.getCurrentUser();
+    if (!user || !window.FirebaseDB) return;
+
+    try {
+      const q = window.FirestoreQuery(
+        window.FirestoreCollection(window.FirebaseDB, "reviews"),
+        window.FirestoreWhere("userId", "==", user.uid)
+      );
+      const snapshot = await window.FirestoreGetDocs(q);
+      this.userReviews = [];
+      snapshot.forEach(doc => {
+        this.userReviews.push(doc.data());
+      });
+    } catch (error) {
+      console.error("Error loading user reviews:", error);
+    }
+  },
+
+  hasUserReviewed(productId) {
+    return this.userReviews.some(r => r.productId === productId);
   },
 
   closeModal() {
