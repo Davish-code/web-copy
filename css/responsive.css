@@ -64,4 +64,9 @@
   .lightbox img { max-width: 95vw; }
   .lightbox-prev, .lightbox-next { width: 36px; height: 36px; font-size: 1rem; }
   .toast { min-width: auto; margin: 0 16px; }
+  
+  .nav-search.active input,
+  .nav-search:focus-within input {
+    width: 130px;
+  }
 }

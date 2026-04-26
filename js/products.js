@@ -2,6 +2,7 @@
 
 const Products = {
   currentCategory: 'all',
+  searchQuery: '',
   items: [],
   categories: [],
   categoryEmojis: {
@@ -40,12 +41,22 @@ const Products = {
     return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
   },
 
-  renderProducts(category = 'all') {
+  renderProducts(category = 'all', query = this.searchQuery) {
     this.currentCategory = category;
+    this.searchQuery = query;
     const grid = document.getElementById('products-grid');
     if (!grid) return;
 
-    const filtered = category === 'all' ? this.items : this.items.filter(p => p.category === category);
+    let filtered = category === 'all' ? this.items : this.items.filter(p => p.category === category);
+
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        p.description.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      );
+    }
 
     if (filtered.length === 0) {
       grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">No products found in this category.</div>';
@@ -188,8 +199,57 @@ const Products = {
     return this.items.find(p => p.id === id);
   },
 
+  initSearch() {
+    const searchInput = document.getElementById('nav-search-input');
+    const searchToggle = document.getElementById('nav-search-toggle');
+    const searchContainer = document.getElementById('nav-search');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value;
+        this.renderProducts(this.currentCategory, query);
+        // If searching and not on menu, navigate to menu
+        const currentSection = document.querySelector('.nav-links a.active')?.dataset.section;
+        if (query && currentSection !== 'menu') {
+          App.navigate('menu');
+        }
+      });
+      
+      // Clear search when clicking X or similar if we added one, 
+      // but for now just focus handling
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          this.renderProducts(this.currentCategory, '');
+          searchContainer.classList.remove('active');
+          searchInput.blur();
+        }
+      });
+    }
+
+    if (searchToggle && searchContainer) {
+      searchToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        searchContainer.classList.toggle('active');
+        if (searchContainer.classList.contains('active')) {
+          searchInput.focus();
+        }
+      });
+      
+      // Close search when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target) && searchContainer.classList.contains('active')) {
+          if (!searchInput.value) {
+            searchContainer.classList.remove('active');
+          }
+        }
+      });
+    }
+  },
+
   async init() {
     this.initCategoryTabs();
+    this.initSearch();
     this.showSkeletons(); // Show loading skeletons immediately
 
     // Wait for Firebase module to finish initializing
