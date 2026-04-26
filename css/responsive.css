@@ -8,6 +8,9 @@
 
 /* ===== TABLET SMALL: 768px ===== */
 @media (max-width: 768px) {
+  :root {
+    --nav-height: 64px;
+  }
   .nav-links {
     position: fixed;
     top: var(--nav-height);
@@ -46,7 +49,7 @@
 /* ===== MOBILE: 480px ===== */
 @media (max-width: 480px) {
   .container { padding: 0 16px; }
-  .page-section { padding: 60px 0; }
+  .page-section { padding: 80px 0 60px; }
   .hero { min-height: 90vh; }
   .hero-content { padding: 0 8px; }
   .hero-buttons { flex-direction: column; }

@@ -112,6 +112,7 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
   border-bottom: 1px solid rgba(212, 160, 86, 0.1);
   z-index: 1000;
   transition: all var(--transition-med);
+  padding-top: env(safe-area-inset-top);
 }
 .navbar.scrolled { 
   background: rgba(10, 29, 19, 0.95); 
