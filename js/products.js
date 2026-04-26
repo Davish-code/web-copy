@@ -250,6 +250,7 @@ const Products = {
   async init() {
     this.initCategoryTabs();
     this.initSearch();
+    this.initLoadingCursor(); // Initialize mouse follower
     this.showSkeletons(); // Show loading skeletons immediately
 
     // Wait for Firebase module to finish initializing
@@ -262,9 +263,32 @@ const Products = {
       }
     });
 
+    this.setLoading(true);
     await this.loadProducts();
     this.renderCategoryTabs(); // Render dynamic tabs
     this.renderProducts('all');
+    this.setLoading(false);
     if (typeof Addons !== 'undefined') Addons.init();
+  },
+
+  initLoadingCursor() {
+    const cursor = document.getElementById('custom-loader-cursor');
+    if (!cursor) return;
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+  },
+
+  setLoading(isLoading) {
+    const cursor = document.getElementById('custom-loader-cursor');
+    if (isLoading) {
+      document.body.classList.add('is-loading-products');
+      if (cursor) cursor.style.display = 'block';
+    } else {
+      document.body.classList.remove('is-loading-products');
+      if (cursor) cursor.style.display = 'none';
+    }
   }
 };

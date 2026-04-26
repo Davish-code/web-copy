@@ -1071,3 +1071,13 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(252, 225, 213, 0.2);
 }
+/* ===== CUSTOM LOADING CURSOR ===== */
+body.is-loading-products, 
+body.is-loading-products * {
+  cursor: none !important;
+}
+
+#custom-loader-cursor {
+  filter: drop-shadow(0 0 10px rgba(86, 180, 100, 0.3));
+  transition: opacity 0.3s ease;
+}
