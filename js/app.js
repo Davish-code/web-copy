@@ -13,6 +13,7 @@ const App = {
     const heroEl = document.getElementById('hero');
     if (sectionId === 'hero') {
       if (heroEl) heroEl.style.display = '';
+      document.getElementById('carousel-section')?.classList.remove('section-hidden');
       document.getElementById('menu')?.classList.remove('section-hidden');
       document.getElementById('gallery-section')?.classList.remove('section-hidden');
       document.getElementById('outlet-map')?.classList.remove('section-hidden');

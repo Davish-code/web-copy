@@ -381,6 +381,10 @@ h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); }
   z-index: 1;
 }
 
+.carousel-section.page-section {
+  padding: 0;
+}
+
 /* ===== FOOTER ===== */
 .footer {
   background: linear-gradient(to bottom, var(--bg-secondary), #030a07);
