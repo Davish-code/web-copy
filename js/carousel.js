@@ -63,16 +63,24 @@ const Carousel = (function() {
   }
 
   function goToSlide(index) {
-    if (index === currentIndex || slides.length === 0) return;
-    
     const allSlides = document.querySelectorAll('.carousel-slide');
     const allDots = document.querySelectorAll('.carousel-dot');
+    
+    if (allSlides.length === 0) return;
 
+    // Handle wrap around
+    let nextIndex = (index + slides.length) % slides.length;
+    
+    if (nextIndex === currentIndex) return;
+
+    // Remove active classes
     if (allSlides[currentIndex]) allSlides[currentIndex].classList.remove('active');
     if (allDots[currentIndex]) allDots[currentIndex].classList.remove('active');
 
-    currentIndex = (index + slides.length) % slides.length;
+    // Update current index
+    currentIndex = nextIndex;
 
+    // Add active classes
     if (allSlides[currentIndex]) allSlides[currentIndex].classList.add('active');
     if (allDots[currentIndex]) allDots[currentIndex].classList.add('active');
 
