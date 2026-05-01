@@ -37,7 +37,7 @@ const Gallery = {
 
     grid.innerHTML = filtered.map((img, i) => `
       <div class="gallery-item animate-in" style="animation-delay:${i * 0.06}s" onclick="Gallery.openLightbox(${this.images.indexOf(img)})">
-        <img src="${img.src}" alt="${img.title}" loading="lazy">
+        <img src="${img.src}" alt="${img.title}" loading="lazy" decoding="async">
         <div class="gallery-item-overlay">
           <span>${img.title}</span>
         </div>

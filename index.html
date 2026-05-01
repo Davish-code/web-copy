@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="YUMEI Bakery — Premium artisan cheesecakes, cakes, and cookies crafted with love in Raipur. Order online for delivery.">
   <title>YUMEI — Artisan Bakery & Patisserie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -14,9 +17,12 @@
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar" id="navbar">
     <div class="container">
-      <div class="nav-logo" style="display:flex; align-items:center; gap: 4px; font-size: 2.2rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-gold); letter-spacing: -1px;">
+      <div class="nav-logo" style="display:flex; align-items:center; gap: 4px; font-size: 2.2rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-gold); letter-spacing: -1px;" role="img" aria-label="YUMEI Bakery Logo">
         Yu
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -15px; margin-left: -5px; opacity: 0.8;"><path d="M6 8c0-3 3-4 3-8"/><path d="M10 8c0-3 3-4 3-8"/><path d="M14 8c0-3 3-4 3-8"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -15px; margin-left: -5px; opacity: 0.8;" aria-hidden="true">
+          <title>Bakery Steam Icon</title>
+          <path d="M6 8c0-3 3-4 3-8"/><path d="M10 8c0-3 3-4 3-8"/><path d="M14 8c0-3 3-4 3-8"/>
+        </svg>
       </div>
       <ul class="nav-links">
         <li><a href="#" data-section="hero" class="active">Home</a></li>
@@ -27,19 +33,19 @@
       <div class="nav-icons">
         <div class="nav-search" id="nav-search">
           <input type="text" id="nav-search-input" placeholder="Search treats..." aria-label="Search products">
-          <button class="nav-icon-btn" id="nav-search-toggle" title="Search">🔍</button>
+          <button class="nav-icon-btn" id="nav-search-toggle" title="Search" aria-label="Toggle search bar">🔍</button>
         </div>
-        <button class="nav-icon-btn" id="nav-cart-btn" title="Cart">
+        <button class="nav-icon-btn" id="nav-cart-btn" title="Cart" aria-label="View Cart">
           🛒
           <span class="cart-badge" id="cart-badge">0</span>
         </button>
         <div class="nav-profile-container">
-          <button class="nav-icon-btn" id="nav-profile-btn" title="Profile">
+          <button class="nav-icon-btn" id="nav-profile-btn" title="Profile" aria-label="My Account">
             <span id="nav-profile-icon">👤</span>
           </button>
           <span id="nav-address-text" class="nav-address-text"></span>
         </div>
-        <button class="hamburger" aria-label="Menu">
+        <button class="hamburger" aria-label="Open Navigation Menu">
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -49,7 +55,7 @@
   <!-- ===== HERO SECTION ===== -->
   <section id="hero" class="hero">
     <div class="hero-bg">
-      <img src="assets/images/hero-banner.png" alt="YUMEI Bakery">
+      <img src="assets/images/hero-banner.png" alt="YUMEI Bakery Hero Banner" width="1600" height="900" decoding="async">
     </div>
     <div class="container">
       <div class="hero-content">
@@ -173,7 +179,7 @@
       </div>
       <div class="map-container">
         <div class="map-iframe">
-          <iframe src="https://www.google.com/maps?q=Aryen+tower+Dronacharya+Public+School+RishabhNagar+Pawan+Vihar+Colony+New+Rajendra+Nagar+Raipur+Tikrapara+Chhattisgarh+492001&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <iframe src="https://www.google.com/maps?q=Aryen+tower+Dronacharya+Public+School+RishabhNagar+Pawan+Vihar+Colony+New+Rajendra+Nagar+Raipur+Tikrapara+Chhattisgarh+492001&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="YUMEI Bakery Location Map"></iframe>
         </div>
         <div class="map-info">
           <h3>YUMEI Bakery</h3>
@@ -220,19 +226,22 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <div class="nav-logo" style="display:flex; align-items:center; gap: 4px; font-size: 2.2rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-gold); letter-spacing: -1px;">
+          <div class="nav-logo" style="display:flex; align-items:center; gap: 4px; font-size: 2.2rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-gold); letter-spacing: -1px;" role="img" aria-label="YUMEI Bakery Footer Logo">
             Yu
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -15px; margin-left: -5px; opacity: 0.8;"><path d="M6 8c0-3 3-4 3-8"/><path d="M10 8c0-3 3-4 3-8"/><path d="M14 8c0-3 3-4 3-8"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -15px; margin-left: -5px; opacity: 0.8;" aria-hidden="true">
+              <title>Bakery Steam Icon</title>
+              <path d="M6 8c0-3 3-4 3-8"/><path d="M10 8c0-3 3-4 3-8"/><path d="M14 8c0-3 3-4 3-8"/>
+            </svg>
           </div>
           <p>Premium artisan bakery crafting cheesecakes, cakes, and cookies with love since 2020.</p>
           <div class="footer-social">
-            <a href="https://www.instagram.com/yumei.in/reels/" title="Instagram" target="_blank">
+            <a href="https://www.instagram.com/yumei.in/reels/" title="Instagram" target="_blank" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="#" title="Facebook">
+            <a href="#" title="Facebook" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.03 1.764-6.227 5.733-6.227 1.9 0 3.903.339 3.903.339v4.291h-2.198c-1.997 0-2.619 1.24-2.619 2.51v3.131h4.835l-.773 3.667h-4.062v7.981l-4.918-.001z"/></svg>
             </a>
-            <a href="#" title="X (Twitter)">
+            <a href="#" title="X (Twitter)" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.294 19.497h2.039L6.486 3.24H4.298l13.309 17.41z"/></svg>
             </a>
           </div>
@@ -332,21 +341,21 @@
   <!-- ===== SCRIPTS ===== -->
   <!-- ===== CUSTOM LOADING CURSOR ===== -->
   <div id="custom-loader-cursor" style="display:none; position:fixed; pointer-events:none; z-index:10000; width:100px; height:100px; transform:translate(-50%, -50%); overflow:hidden; border-radius:50%;">
-    <iframe src="https://lottie.host/embed/c2fc7f94-95a9-4ffb-b0ff-2e96e5788d22/EIlVljJpja.lottie" style="width:100%; height:100%; border:none; scale: 1.5;"></iframe>
+    <iframe src="https://lottie.host/embed/c2fc7f94-95a9-4ffb-b0ff-2e96e5788d22/EIlVljJpja.lottie" style="width:100%; height:100%; border:none; scale: 1.5;" title="Loading Animation" loading="lazy"></iframe>
   </div>
 
-  <script type="module" src="js/firebase-init.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/products.js"></script>
-  <script src="js/cart.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/checkout.js"></script>
-  <script src="js/orders.js"></script>
-  <script src="js/gallery.js"></script>
-  <script src="js/addons.js"></script>
-  <script src="js/reviews.js"></script>
-  <script src="js/carousel.js"></script>
-  <script src="js/app.js"></script>
+  <script type="module" src="js/firebase-init.js" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/utils.js" defer></script>
+  <script src="js/products.js" defer></script>
+  <script src="js/cart.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/checkout.js" defer></script>
+  <script src="js/orders.js" defer></script>
+  <script src="js/gallery.js" defer></script>
+  <script src="js/addons.js" defer></script>
+  <script src="js/reviews.js" defer></script>
+  <script src="js/carousel.js" defer></script>
+  <script src="js/app.js" defer></script>
 </body>
 </html>

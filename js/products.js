@@ -89,7 +89,7 @@ const Products = {
       return `
       <div class="product-card animate-in ${isOutOfStock ? 'out-of-stock' : ''}" style="animation-delay: ${i * 0.08}s; position:relative;">
         <div class="product-card-img">
-          <img src="${p.image}" alt="${p.name}" loading="lazy"
+          <img src="${p.image}" alt="${p.name}" loading="lazy" decoding="async"
                onerror="this.src=''; this.onerror=null; this.style.background='var(--surface-2)';">
           ${p.badge ? `<span class="product-card-badge">${p.badge}</span>` : ''}
           ${discountTag}
