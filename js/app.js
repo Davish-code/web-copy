@@ -11,14 +11,18 @@ const App = {
     
     // Show hero always or specific section
     const heroEl = document.getElementById('hero');
+    const bannerEl = document.getElementById('delivery-banner');
+
     if (sectionId === 'hero') {
       if (heroEl) heroEl.style.display = '';
+      if (bannerEl) bannerEl.classList.remove('section-hidden');
       document.getElementById('carousel-section')?.classList.remove('section-hidden');
       document.getElementById('menu')?.classList.remove('section-hidden');
       document.getElementById('gallery-section')?.classList.remove('section-hidden');
       document.getElementById('outlet-map')?.classList.remove('section-hidden');
     } else {
       if (heroEl) heroEl.style.display = 'none';
+      if (bannerEl) bannerEl.classList.add('section-hidden');
       const target = document.getElementById(sectionId);
       if (target) target.classList.remove('section-hidden');
     }
@@ -106,8 +110,16 @@ const App = {
   updateInfoPlaceholders() {
     const freeLimit = document.getElementById('info-free-limit');
     const delCharge = document.getElementById('info-delivery-charge');
-    if (freeLimit) freeLimit.innerText = `₹${Config.data.freeDeliveryMin.toLocaleString('en-IN')}`;
-    if (delCharge) delCharge.innerText = `₹${Config.data.deliveryCharge.toLocaleString('en-IN')}`;
+    
+    const formattedFree = `₹${Config.data.freeDeliveryMin.toLocaleString('en-IN')}`;
+    const formattedCharge = `₹${Config.data.deliveryCharge.toLocaleString('en-IN')}`;
+
+    if (freeLimit) freeLimit.innerText = formattedFree;
+    if (delCharge) delCharge.innerText = formattedCharge;
+
+    // Update banner placeholders
+    document.querySelectorAll('.banner-free-limit').forEach(el => el.innerText = formattedFree);
+    document.querySelectorAll('.banner-delivery-charge').forEach(el => el.innerText = formattedCharge);
   }
 };
 

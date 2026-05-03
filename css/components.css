@@ -1220,3 +1220,69 @@ body.is-loading-products * {
   .carousel-nav.next { right: 15px; }
   .carousel-dots { bottom: 25px; }
 }
+
+/* ===== DELIVERY BANNER ===== */
+.delivery-banner {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  width: 100%;
+  height: 28px;
+  background: linear-gradient(90deg, #06140d 0%, #0a1d13 50%, #06140d 100%);
+  border-bottom: 1px solid rgba(212, 160, 86, 0.15);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: top var(--transition-med);
+}
+
+.navbar.scrolled + .delivery-banner {
+  top: 72px;
+}
+
+.delivery-banner-track {
+  display: flex;
+  width: max-content;
+  animation: banner-marquee 30s linear infinite;
+}
+
+.delivery-banner-content {
+  color: var(--accent-gold);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.delivery-banner-content span {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 4px;
+}
+
+@keyframes banner-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Push hero section down when banner is active */
+#delivery-banner:not(.section-hidden) + #hero {
+  padding-top: calc(var(--nav-height) + 28px);
+}
+
+@media (max-width: 768px) {
+  .delivery-banner {
+    height: 24px;
+  }
+  .delivery-banner-content {
+    font-size: 0.65rem;
+  }
+  #delivery-banner:not(.section-hidden) + #hero {
+    padding-top: calc(70px + 24px); /* Mobile nav is approx 70px */
+  }
+}
+
