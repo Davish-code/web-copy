@@ -98,7 +98,7 @@ const Products = {
           <div class="product-card-category">${p.category}</div>
           <h3>${p.name}</h3>
           <p class="description">${p.description}</p>
-          <div class="product-card-rating">
+          <div class="product-card-rating" onclick="Reviews.showReviewsModal('${p.id}')" style="cursor: pointer;" title="View Reviews">
             <span class="stars">${this.renderStars(p.rating)}</span>
             <span class="count">(${p.reviews || 0})</span>
           </div>

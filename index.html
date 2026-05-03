@@ -341,6 +341,23 @@
       <button class="btn btn-primary btn-submit-review" style="width: 100%; margin-top: 10px;" onclick="Reviews.submitReview()">Submit Review</button>
     </div>
   </div>
+  
+  <!-- ===== VIEW REVIEWS MODAL ===== -->
+  <div class="modal-overlay" id="view-reviews-modal-overlay">
+    <div class="modal" style="max-width: 500px;">
+      <button class="modal-close" onclick="Reviews.closeViewModal()">✕</button>
+      <div class="reviews-header" style="text-align: center; margin-bottom: 24px;">
+        <h2 id="view-reviews-product-name" style="margin-bottom: 8px;">Customer Reviews</h2>
+        <div id="view-reviews-stats" style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--accent-gold);">
+          <!-- Dynamic stats -->
+        </div>
+      </div>
+      <div id="reviews-list-container" class="reviews-list-container">
+        <!-- Reviews injected here -->
+      </div>
+    </div>
+  </div>
+
 
   <!-- ===== LIGHTBOX ===== -->
   <div class="lightbox" id="lightbox">

@@ -154,5 +154,81 @@ const Reviews = {
         this.updateStars(index + 1);
       });
     });
+  },
+
+  async showReviewsModal(productId) {
+    const product = Products.getProductById(productId);
+    if (!product) return;
+
+    const modal = document.getElementById('view-reviews-modal-overlay');
+    const container = document.getElementById('reviews-list-container');
+    const nameEl = document.getElementById('view-reviews-product-name');
+    const statsEl = document.getElementById('view-reviews-stats');
+
+    if (!modal || !container) return;
+
+    // Set UI to loading state
+    nameEl.textContent = product.name;
+    statsEl.innerHTML = `<span>${Products.renderStars(product.rating)}</span> <span>(${product.reviews || 0} reviews)</span>`;
+    container.innerHTML = '<div class="reviews-empty">Loading reviews...</div>';
+    modal.classList.add('active');
+
+    try {
+      if (!window.FirebaseDB) throw new Error("Firebase not ready");
+
+      const q = window.FirestoreQuery(
+        window.FirestoreCollection(window.FirebaseDB, "reviews"),
+        window.FirestoreWhere("productId", "==", productId),
+        window.FirestoreOrderBy("date", "desc")
+      );
+
+      const snapshot = await window.FirestoreGetDocs(q);
+      const reviews = [];
+      snapshot.forEach(doc => reviews.push(doc.data()));
+
+      this.renderReviewsList(reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      container.innerHTML = '<div class="reviews-empty">Could not load reviews. Please try again.</div>';
+    }
+  },
+
+  renderReviewsList(reviews) {
+    const container = document.getElementById('reviews-list-container');
+    if (!container) return;
+
+    if (reviews.length === 0) {
+      container.innerHTML = `
+        <div class="reviews-empty">
+          <i>💬</i>
+          <p>No reviews yet for this product.<br>Be the first to share your experience!</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = reviews.map(r => {
+      const date = new Date(r.date).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      return `
+        <div class="review-item">
+          <div class="review-item-header">
+            <span class="review-item-user">${r.userName}</span>
+            <span class="review-item-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+          </div>
+          <p class="review-item-comment">${r.comment || 'No comment provided.'}</p>
+          <div class="review-item-date">${date}</div>
+        </div>
+      `;
+    }).join('');
+  },
+
+  closeViewModal() {
+    const modal = document.getElementById('view-reviews-modal-overlay');
+    if (modal) modal.classList.remove('active');
   }
 };
