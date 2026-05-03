@@ -178,13 +178,15 @@ const Reviews = {
 
       const q = window.FirestoreQuery(
         window.FirestoreCollection(window.FirebaseDB, "reviews"),
-        window.FirestoreWhere("productId", "==", productId),
-        window.FirestoreOrderBy("date", "desc")
+        window.FirestoreWhere("productId", "==", productId)
       );
 
       const snapshot = await window.FirestoreGetDocs(q);
       const reviews = [];
       snapshot.forEach(doc => reviews.push(doc.data()));
+
+      // Sort by date (descending) in JS to avoid Firestore composite index requirement
+      reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       this.renderReviewsList(reviews);
     } catch (error) {
