@@ -384,6 +384,30 @@ select.form-input option { background: var(--bg-secondary); color: var(--text-pr
   padding: 40px;
   backdrop-filter: blur(10px);
 }
+.auth-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+.auth-buttons-group .btn {
+  width: 100%;
+  padding: 12px 20px;
+  justify-content: center;
+}
+.btn-apple {
+  background: #000000;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+.btn-apple:hover {
+  background: #141414;
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
 .auth-tabs {
   display: flex;
   margin-bottom: 32px;
